@@ -1,0 +1,10 @@
+/* 
+  Localizable.strings
+  who-fed-blaise
+
+  Created by Guillaume Devillers on 15.06.22.
+  
+*/
+"full-portion" = "Portion Complete";
+"half-portion" = "Demi Portion";
+"delete" = "Supprimer";
