@@ -7,17 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8A07DFBA28512EDA0079AB10 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A07DFB928512EDA0079AB10 /* Model.swift */; };
-		8A07DFBC28512F130079AB10 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A07DFBB28512F130079AB10 /* ViewModel.swift */; };
+		8A07DFBC28512F130079AB10 /* FeedingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A07DFBB28512F130079AB10 /* FeedingViewModel.swift */; };
+		8A4491802AE96DBC0009A127 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A44917F2AE96DBC0009A127 /* ContentView.swift */; };
 		8A76C1A1285975A600CCAA49 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A76C19C285974ED00CCAA49 /* NetworkExtension.framework */; };
+		8A856A342AF2ECA700DBDD91 /* DataPublisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A856A332AF2ECA700DBDD91 /* DataPublisher.swift */; };
+		8AA9FC5629D0DD4000D37A7C /* FeedingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AA9FC5529D0DD4000D37A7C /* FeedingModel.swift */; };
 		8AC2AEF0282CD46D00336FAC /* who_fed_blaiseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2AEEF282CD46D00336FAC /* who_fed_blaiseApp.swift */; };
-		8AC2AEF2282CD46D00336FAC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2AEF1282CD46D00336FAC /* ContentView.swift */; };
+		8AC2AEF2282CD46D00336FAC /* FeedingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2AEF1282CD46D00336FAC /* FeedingView.swift */; };
 		8AC2AEF4282CD46F00336FAC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8AC2AEF3282CD46F00336FAC /* Assets.xcassets */; };
 		8AC2AEF7282CD46F00336FAC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8AC2AEF6282CD46F00336FAC /* Preview Assets.xcassets */; };
 		8AC2AF01282CD46F00336FAC /* who_fed_blaiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2AF00282CD46F00336FAC /* who_fed_blaiseTests.swift */; };
 		8AC2AF0B282CD46F00336FAC /* who_fed_blaiseUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2AF0A282CD46F00336FAC /* who_fed_blaiseUITests.swift */; };
 		8AC2AF0D282CD46F00336FAC /* who_fed_blaiseUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2AF0C282CD46F00336FAC /* who_fed_blaiseUITestsLaunchTests.swift */; };
 		8ACE5636285A1DE200458C4B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8ACE5638285A1DE200458C4B /* Localizable.strings */; };
+		8AE7467C2A0104B600E9F168 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE7467B2A0104B600E9F168 /* SettingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,24 +41,27 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		8A07DFB928512EDA0079AB10 /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
-		8A07DFBB28512F130079AB10 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
+		8A07DFBB28512F130079AB10 /* FeedingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedingViewModel.swift; sourceTree = "<group>"; };
+		8A44917F2AE96DBC0009A127 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8A76C19A285974EC00CCAA49 /* who-fed-blaise.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "who-fed-blaise.entitlements"; sourceTree = "<group>"; };
 		8A76C19C285974ED00CCAA49 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
+		8A856A332AF2ECA700DBDD91 /* DataPublisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataPublisher.swift; sourceTree = "<group>"; };
+		8AA9FC5529D0DD4000D37A7C /* FeedingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedingModel.swift; sourceTree = "<group>"; };
 		8AC15EEB28304881000CC791 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		8AC2AEEC282CD46D00336FAC /* who-fed-blaise.swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "who-fed-blaise.swift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8AC2AEEC282CD46D00336FAC /* who-fed-blaise.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "who-fed-blaise.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AC2AEEF282CD46D00336FAC /* who_fed_blaiseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = who_fed_blaiseApp.swift; sourceTree = "<group>"; };
-		8AC2AEF1282CD46D00336FAC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		8AC2AEF1282CD46D00336FAC /* FeedingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedingView.swift; sourceTree = "<group>"; };
 		8AC2AEF3282CD46F00336FAC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8AC2AEF6282CD46F00336FAC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		8AC2AEFC282CD46F00336FAC /* who-fed-blaise.swiftTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "who-fed-blaise.swiftTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8AC2AEFC282CD46F00336FAC /* who-fed-blaiseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "who-fed-blaiseTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AC2AF00282CD46F00336FAC /* who_fed_blaiseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = who_fed_blaiseTests.swift; sourceTree = "<group>"; };
-		8AC2AF06282CD46F00336FAC /* who-fed-blaise.swiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "who-fed-blaise.swiftUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8AC2AF06282CD46F00336FAC /* who-fed-blaiseUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "who-fed-blaiseUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AC2AF0A282CD46F00336FAC /* who_fed_blaiseUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = who_fed_blaiseUITests.swift; sourceTree = "<group>"; };
 		8AC2AF0C282CD46F00336FAC /* who_fed_blaiseUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = who_fed_blaiseUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		8ACE5637285A1DE200458C4B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8ACE5639285A1DEE00458C4B /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8ACE563A285A1DF000458C4B /* de */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/Localizable.strings; sourceTree = "<group>"; };
+		8AE7467B2A0104B600E9F168 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,9 +112,9 @@
 		8AC2AEED282CD46D00336FAC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8AC2AEEC282CD46D00336FAC /* who-fed-blaise.swift.app */,
-				8AC2AEFC282CD46F00336FAC /* who-fed-blaise.swiftTests.xctest */,
-				8AC2AF06282CD46F00336FAC /* who-fed-blaise.swiftUITests.xctest */,
+				8AC2AEEC282CD46D00336FAC /* who-fed-blaise.app */,
+				8AC2AEFC282CD46F00336FAC /* who-fed-blaiseTests.xctest */,
+				8AC2AF06282CD46F00336FAC /* who-fed-blaiseUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -116,13 +122,16 @@
 		8AC2AEEE282CD46D00336FAC /* who-fed-blaise */ = {
 			isa = PBXGroup;
 			children = (
+				8AA9FC5529D0DD4000D37A7C /* FeedingModel.swift */,
+				8AC2AEF1282CD46D00336FAC /* FeedingView.swift */,
+				8A44917F2AE96DBC0009A127 /* ContentView.swift */,
+				8A07DFBB28512F130079AB10 /* FeedingViewModel.swift */,
+				8A856A332AF2ECA700DBDD91 /* DataPublisher.swift */,
+				8AE7467B2A0104B600E9F168 /* SettingView.swift */,
 				8ACE5638285A1DE200458C4B /* Localizable.strings */,
 				8A76C19A285974EC00CCAA49 /* who-fed-blaise.entitlements */,
 				8AC15EEB28304881000CC791 /* Info.plist */,
 				8AC2AEEF282CD46D00336FAC /* who_fed_blaiseApp.swift */,
-				8AC2AEF1282CD46D00336FAC /* ContentView.swift */,
-				8A07DFB928512EDA0079AB10 /* Model.swift */,
-				8A07DFBB28512F130079AB10 /* ViewModel.swift */,
 				8AC2AEF3282CD46F00336FAC /* Assets.xcassets */,
 				8AC2AEF5282CD46F00336FAC /* Preview Content */,
 			);
@@ -157,9 +166,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8AC2AEEB282CD46D00336FAC /* who-fed-blaise.swift */ = {
+		8AC2AEEB282CD46D00336FAC /* who-fed-blaise */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8AC2AF10282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaise.swift" */;
+			buildConfigurationList = 8AC2AF10282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaise" */;
 			buildPhases = (
 				8AC2AEE8282CD46D00336FAC /* Sources */,
 				8AC2AEE9282CD46D00336FAC /* Frameworks */,
@@ -169,14 +178,14 @@
 			);
 			dependencies = (
 			);
-			name = "who-fed-blaise.swift";
+			name = "who-fed-blaise";
 			productName = "who-fed-blaise";
-			productReference = 8AC2AEEC282CD46D00336FAC /* who-fed-blaise.swift.app */;
+			productReference = 8AC2AEEC282CD46D00336FAC /* who-fed-blaise.app */;
 			productType = "com.apple.product-type.application";
 		};
-		8AC2AEFB282CD46F00336FAC /* who-fed-blaise.swiftTests */ = {
+		8AC2AEFB282CD46F00336FAC /* who-fed-blaiseTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8AC2AF13282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaise.swiftTests" */;
+			buildConfigurationList = 8AC2AF13282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaiseTests" */;
 			buildPhases = (
 				8AC2AEF8282CD46F00336FAC /* Sources */,
 				8AC2AEF9282CD46F00336FAC /* Frameworks */,
@@ -187,14 +196,14 @@
 			dependencies = (
 				8AC2AEFE282CD46F00336FAC /* PBXTargetDependency */,
 			);
-			name = "who-fed-blaise.swiftTests";
+			name = "who-fed-blaiseTests";
 			productName = "who-fed-blaiseTests";
-			productReference = 8AC2AEFC282CD46F00336FAC /* who-fed-blaise.swiftTests.xctest */;
+			productReference = 8AC2AEFC282CD46F00336FAC /* who-fed-blaiseTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		8AC2AF05282CD46F00336FAC /* who-fed-blaise.swiftUITests */ = {
+		8AC2AF05282CD46F00336FAC /* who-fed-blaiseUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8AC2AF16282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaise.swiftUITests" */;
+			buildConfigurationList = 8AC2AF16282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaiseUITests" */;
 			buildPhases = (
 				8AC2AF02282CD46F00336FAC /* Sources */,
 				8AC2AF03282CD46F00336FAC /* Frameworks */,
@@ -205,9 +214,9 @@
 			dependencies = (
 				8AC2AF08282CD46F00336FAC /* PBXTargetDependency */,
 			);
-			name = "who-fed-blaise.swiftUITests";
+			name = "who-fed-blaiseUITests";
 			productName = "who-fed-blaiseUITests";
-			productReference = 8AC2AF06282CD46F00336FAC /* who-fed-blaise.swiftUITests.xctest */;
+			productReference = 8AC2AF06282CD46F00336FAC /* who-fed-blaiseUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -233,7 +242,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 8AC2AEE7282CD46D00336FAC /* Build configuration list for PBXProject "who-fed-blaise.swift" */;
+			buildConfigurationList = 8AC2AEE7282CD46D00336FAC /* Build configuration list for PBXProject "who-fed-blaise" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -248,9 +257,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8AC2AEEB282CD46D00336FAC /* who-fed-blaise.swift */,
-				8AC2AEFB282CD46F00336FAC /* who-fed-blaise.swiftTests */,
-				8AC2AF05282CD46F00336FAC /* who-fed-blaise.swiftUITests */,
+				8AC2AEEB282CD46D00336FAC /* who-fed-blaise */,
+				8AC2AEFB282CD46F00336FAC /* who-fed-blaiseTests */,
+				8AC2AF05282CD46F00336FAC /* who-fed-blaiseUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -287,10 +296,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8AC2AEF2282CD46D00336FAC /* ContentView.swift in Sources */,
+				8AC2AEF2282CD46D00336FAC /* FeedingView.swift in Sources */,
+				8AE7467C2A0104B600E9F168 /* SettingView.swift in Sources */,
+				8A856A342AF2ECA700DBDD91 /* DataPublisher.swift in Sources */,
+				8A4491802AE96DBC0009A127 /* ContentView.swift in Sources */,
 				8AC2AEF0282CD46D00336FAC /* who_fed_blaiseApp.swift in Sources */,
-				8A07DFBC28512F130079AB10 /* ViewModel.swift in Sources */,
-				8A07DFBA28512EDA0079AB10 /* Model.swift in Sources */,
+				8A07DFBC28512F130079AB10 /* FeedingViewModel.swift in Sources */,
+				8AA9FC5629D0DD4000D37A7C /* FeedingModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -316,12 +328,12 @@
 /* Begin PBXTargetDependency section */
 		8AC2AEFE282CD46F00336FAC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8AC2AEEB282CD46D00336FAC /* who-fed-blaise.swift */;
+			target = 8AC2AEEB282CD46D00336FAC /* who-fed-blaise */;
 			targetProxy = 8AC2AEFD282CD46F00336FAC /* PBXContainerItemProxy */;
 		};
 		8AC2AF08282CD46F00336FAC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8AC2AEEB282CD46D00336FAC /* who-fed-blaise.swift */;
+			target = 8AC2AEEB282CD46D00336FAC /* who-fed-blaise */;
 			targetProxy = 8AC2AF07282CD46F00336FAC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -533,7 +545,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/who-fed-blaise.swift.app/who-fed-blaise.swift";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/who-fed-blaise.app/who-fed-blaise";
 			};
 			name = Debug;
 		};
@@ -552,7 +564,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/who-fed-blaise.swift.app/who-fed-blaise.swift";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/who-fed-blaise.app/who-fed-blaise";
 			};
 			name = Release;
 		};
@@ -593,7 +605,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8AC2AEE7282CD46D00336FAC /* Build configuration list for PBXProject "who-fed-blaise.swift" */ = {
+		8AC2AEE7282CD46D00336FAC /* Build configuration list for PBXProject "who-fed-blaise" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8AC2AF0E282CD46F00336FAC /* Debug */,
@@ -602,7 +614,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8AC2AF10282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaise.swift" */ = {
+		8AC2AF10282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaise" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8AC2AF11282CD46F00336FAC /* Debug */,
@@ -611,7 +623,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8AC2AF13282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaise.swiftTests" */ = {
+		8AC2AF13282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaiseTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8AC2AF14282CD46F00336FAC /* Debug */,
@@ -620,7 +632,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8AC2AF16282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaise.swiftUITests" */ = {
+		8AC2AF16282CD46F00336FAC /* Build configuration list for PBXNativeTarget "who-fed-blaiseUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8AC2AF17282CD46F00336FAC /* Debug */,

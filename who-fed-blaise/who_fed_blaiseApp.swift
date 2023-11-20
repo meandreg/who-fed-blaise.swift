@@ -10,11 +10,11 @@ import SwiftUI
 @main
 struct who_fed_blaiseApp: App {
     
-    let feedingViewModel = FeedingViewModel()
+    @StateObject var feedingViewModel = FeedingViewModel()
     
     var body: some Scene {
         WindowGroup {
-            FeedingView(feedingViewModel: feedingViewModel)
+            ContentView(feedingViewModel: feedingViewModel)
         }
     }
 }

@@ -7,9 +7,20 @@
 
 import SwiftUI
 
-struct FeedingView: View {
+struct ContentView: View {
 
     @ObservedObject var feedingViewModel: FeedingViewModel
+    //@State var urlSessionModel: urlSes
+    @State var petName: String
+    @State var url: String
+    @State var recordNumber: Int
+ 
+    init(feedingViewModel: FeedingViewModel) {
+        self.feedingViewModel = feedingViewModel
+        self.petName = feedingViewModel.getPetName()
+        self.url = feedingViewModel.getUrl()
+        self.recordNumber = feedingViewModel.getRecordsNumber()
+    }
 
     var body: some View {
         
@@ -24,29 +35,19 @@ struct FeedingView: View {
                     .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
                     .opacity(1.0)
                 
-               VStack {
-                    
-                   Text(feedingViewModel.getPetName().uppercased())
-                        .font(.largeTitle)
-                        .bold()
-                    
-                   ForEach(feedingViewModel.getFeedingRecords(), id: \.timestamp, content: {
-                       feedingRecord in
-                       RecordView(feedingViewModel: feedingViewModel, feedingRecord: feedingRecord)
-                   })
-                   
-                   HStack {
-                       Text(LocalizedStringKey("full-portion")).onTapGesture {
-                           feedingViewModel.add(1)
-                        }
-                        .font(.largeTitle)
-                        .padding()
-                        
-                        Text(LocalizedStringKey("half-portion")).onTapGesture {
-                            feedingViewModel.add(0,5)
-                        }
-                        .font(.largeTitle)
-                        .padding()
+                TabView {
+                    FeedingView(feedingViewModel: feedingViewModel)
+                        .tabItem {
+                            Label("Feeding Board", systemImage: "basket")
+                    }
+
+                    SettingView(
+                        petName: $petName,
+                        url: $url,
+                        recordNumber: $recordNumber
+                        )
+                        .tabItem {
+                            Label("Setting", systemImage: "gearshape")
                     }
                 }
             }
@@ -54,29 +55,10 @@ struct FeedingView: View {
     }
 }
 
-struct RecordView: View {
-    var feedingViewModel: FeedingViewModel
-    var feedingRecord: FeedingRecord
-    
-    var body: some View {
-        VStack {
-            Text(DateFormatters.iso8601DateFormatter.string(from: feedingRecord.timestamp))
-                .font(.title)
-                .foregroundColor(.white)
-            Text(feedingRecord.feeder)
-                .foregroundColor(.white)
-        }
-        .onTapGesture {
-            feedingViewModel.del(feedingRecord)
-        }
-        .padding()
-    }
-}
-
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         let feedingViewModel = FeedingViewModel()
-        FeedingView(feedingViewModel: feedingViewModel)
+        ContentView(feedingViewModel: feedingViewModel)
     }
 }
