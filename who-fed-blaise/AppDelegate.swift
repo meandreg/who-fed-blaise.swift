@@ -25,14 +25,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         logger.error("Remote notification is unavailable: \(error.localizedDescription)")
     }
     
-    func application(_ application: UIApplication,
+    /*func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         forwardTokenToServer(token: <#T##Data#>)
-    }
+    }*/
     
-    func forwardTokenToServer(token: Data) {
+    /*func forwardTokenToServer(token: Data) {
         let tokenComponents = token.map { data in String(format: "%02.2hhx", data)}
         let deviceTokenString = tokenComponents.joined()
-    }
+    }*/
 }
 
