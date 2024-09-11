@@ -8,3 +8,12 @@
 "full-portion" = "Volle Portion";
 "half-portion" = "Halbe Portion";
 "delete" = "Löschen";
+
+"feeder" = "pfleger";
+"record-number" = "rekordzahl";
+"next-feeding-in" = "nächste Mahlzeit in";
+"notify-start" = "benachrichtigung";
+"notification-frequency" = "erinnerungsfrequenz";
+"hour(s)" = "Stunde(n)";
+"minute(s)" = "Minute(n)";
+"before" = "vor";

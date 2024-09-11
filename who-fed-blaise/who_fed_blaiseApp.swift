@@ -11,10 +11,13 @@ import SwiftUI
 struct who_fed_blaiseApp: App {
     
     @StateObject var feedingViewModel = FeedingViewModel()
+    //@StateObject var settingViewModel = SettingViewModel()
     
     var body: some Scene {
         WindowGroup {
+            //NotificationRequestView()
             ContentView(feedingViewModel: feedingViewModel)
         }
     }
 }
+

@@ -15,21 +15,49 @@ struct FeedingView: View {
         
         VStack {
             
-            Text(feedingViewModel.getPetName().uppercased())
-                .font(.largeTitle)
-                .bold()
+            HStack {
+                TextField("Pet Name", text: $feedingViewModel.petName)
+                    .padding()
+                    /*.overlay(
+                        RoundedRectangle(cornerRadius: 0)
+                            .stroke(lineWidth: 1)
+                    )*/
+                    .autocorrectionDisabled()
+                    .onSubmit {
+                        feedingViewModel.saveSetting()
+                        feedingViewModel.get()
+                    }
+                
+                Label("", systemImage: "arrow.clockwise")
+                    .onTapGesture {
+                        feedingViewModel.get()
+                    }
+            }
+            .font(.largeTitle)
             
-            ForEach(feedingViewModel.getFeedingRecords(), id: \.timestamp, content: {
-                feedingRecord in
-                RecordView(feedingViewModel: feedingViewModel, feedingRecord: feedingRecord)
-            })
+            List {
+                ForEach(feedingViewModel.getFeedingRecords(), id: \.timestamp, content: {
+                    feedingRecord in
+                    RecordView(feedingRecord: feedingRecord)
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
+                                feedingViewModel.del(feedingRecord)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
+                        .listRowInsets(EdgeInsets())
+                })
+            }
+            .listStyle(.plain)
             
-            VStack {
+            //.scrollContentBackground(Visibility.hidden)
+            
+            HStack {
                 Text(LocalizedStringKey("full-portion"))
                     .onTapGesture {
                         feedingViewModel.add(1)
                     }
-                    .font(.largeTitle)
                     .padding()
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
@@ -38,34 +66,43 @@ struct FeedingView: View {
                 
                 Text(LocalizedStringKey("half-portion"))
                     .onTapGesture {
-                        feedingViewModel.add(Int(0.5))
+                        feedingViewModel.add(0.5)
                     }
-                    .font(.largeTitle)
                     .padding()
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(lineWidth: 4)
                     )
             }
+            .font(.title3)
         }
     }
 }
 
 
 struct RecordView: View {
-    var feedingViewModel: FeedingViewModel
     var feedingRecord: FeedingRecord
     
     var body: some View {
         VStack {
-            Text(DateFormatters.iso8601DateFormatter.string(from: feedingRecord.timestamp))
-                .font(.title)
-                //.foregroundColor(.white)
-            Text(feedingRecord.feeder)
-                //.foregroundColor(.white)
-        }
-        .onTapGesture {
-            feedingViewModel.del(feedingRecord)
+            let timestamp = DateFormatters.anyDateFormatter.string(from: feedingRecord.timestamp)
+            Text(timestamp)
+                .font(.title2)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+            //let portion = String(format: "%.0f", feedingRecord.portion*100)
+            HStack {
+                if feedingRecord.portion == 1 {
+                    Text(LocalizedStringKey("full-portion"))
+                } else {
+                    Text(LocalizedStringKey("half-portion"))
+                }
+                    
+                Text(", ")
+                Text(LocalizedStringKey("feeder"))
+                Text(": \(feedingRecord.feeder)")
+                     
+            }
         }
         .hoverEffect(.highlight)
         .padding()

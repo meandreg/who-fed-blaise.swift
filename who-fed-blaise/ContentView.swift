@@ -10,55 +10,54 @@ import SwiftUI
 struct ContentView: View {
 
     @ObservedObject var feedingViewModel: FeedingViewModel
-    //@State var urlSessionModel: urlSes
-    @State var petName: String
-    @State var url: String
-    @State var recordNumber: Int
- 
-    init(feedingViewModel: FeedingViewModel) {
-        self.feedingViewModel = feedingViewModel
-        self.petName = feedingViewModel.getPetName()
-        self.url = feedingViewModel.getUrl()
-        self.recordNumber = feedingViewModel.getRecordsNumber()
-    }
+
+    @State private var selection = 0
 
     var body: some View {
         
-        GeometryReader {
-            geo in
+        //GeometryReader {
+            //geo in
             
             ZStack {
-                Image("Wallpaper")
+                /*Image("Wallpaper")
                     .resizable()
                     .scaledToFill()
                     .edgesIgnoringSafeArea(.all)
                     .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
-                    .opacity(1.0)
+                    .opacity(1.0)*/
                 
-                TabView {
+                TabView (selection: $selection,
+                         content:  {
                     FeedingView(feedingViewModel: feedingViewModel)
                         .tabItem {
                             Label("Feeding Board", systemImage: "basket")
+                        }
+                        .tag(0)
+                        .onAppear(perform: {
+                            NotificationManager.notificatioManager.requestNotification()
+                            feedingViewModel.get()
+                        })
+                        .background(
+                            Image("Wallpaper")
+                            .resizable()
+                            )
+                    
+                    SettingView(feedingViewModel: feedingViewModel)
+                    .tabItem {
+                        Label("Setting", systemImage: "gearshape")
                     }
-
-                    SettingView(
-                        petName: $petName,
-                        url: $url,
-                        recordNumber: $recordNumber
-                        )
-                        .tabItem {
-                            Label("Setting", systemImage: "gearshape")
-                    }
-                }
+                    .tag(1)
+                })
             }
-        }
+        //}
     }
 }
 
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        let feedingViewModel = FeedingViewModel()
-        ContentView(feedingViewModel: feedingViewModel)
+        Group {
+            ContentView(feedingViewModel: FeedingViewModel())
+        }
     }
 }

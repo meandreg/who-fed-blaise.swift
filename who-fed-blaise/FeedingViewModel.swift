@@ -7,205 +7,315 @@
 
 import Foundation
 import Combine
+import os
+import UserNotifications
+import BackgroundTasks
 
 class CloudantFeedingRecord: Decodable {
     var timestamp: Date = Date()
-    var feeder: String = ProcessInfo.processInfo.hostName
-    var portion: Int = 1
+    var feeder: String = ""
+    var portion: Float = 1
 }
 
 class CloudantFeedingData: Decodable {
-    var _id: String = "blaise"
+    var _id: String?
     var _rev: String?
     var records: [CloudantFeedingRecord] = []
 }
 
 class FeedingViewModel: ObservableObject{
     
+    let PARAM_APPNAME="appname"
+    let PARAM_URL="url"
+    
+    let ACTION_GET="get"
+    let ACTION_ADD="add"
+    let ACTION_DEL="del"
+    let ACTION_SUB="sub"
+    let ACTION_UNS="uns"
+    
     let PARAM_PETNAME="petname"
     let PARAM_FEEDER="feeder"
     let PARAM_PORTION="portion"
     let PARAM_TIMESTAMP="timestamp"
     let PARAM_RECORDNUMBER="recordnumber"
+    let PARAM_DEVICETOKEN="devicetoken"
+    
+    let PARAM_FEEDINGNEXT="feedingnext"
+    let PARAM_NOTIFBEFORE="notifbefore"
+    let PARAM_NOTIFEVERY="notifevery"
 
-    @Published var feedingData: FeedingModel
-    @Published var urlSession: FeedingURLSession
+    let appname = "who-fed-blaise"
+    let logger = Logger(subsystem: "who-fed-blaise", category: "FeedingViewModel")
+    let userDefault = UserDefaults.standard
+    /*let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { timer in
+        print("Timer fired!")
+    }*/
+    @Published var recordNumber: Float = 3
+    private (set) var deviceToken: String 
+    private (set) var returnCode: Int?
+    private (set) var errorMessage: String?
+    // Next feedding in minutes
+    @Published var feedingNext :Float = 60*12
+    // Minutes before next feeding starting notifying
+    @Published var notificationBefore :Float = 60
+    // Interval between each notification
+    @Published var notificationEvery :Float = 10
     
-    var  cancellable = Set<AnyCancellable>()
+    @Published var timerLongEvery :Float = 10
+    @Published var timerShortEvery :Float = 1
     
-    var buffer: FeedingModel
+    @Published var petName: String = "blaise"
+    @Published var feedingRecords: [FeedingRecord] = []
+    @Published var url: String = "https://who-fed-blaise.o27h4hea3ks.eu-de.codeengine.appdomain.cloud/"
+    //@Published var url: String = "http://localhost:8080/"
+    @Published var feeder: String = ProcessInfo.processInfo.hostName
+    
     
     let decoder: JSONDecoder
     
     init() {
         decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        feedingData = FeedingModel()
-        urlSession = FeedingURLSession()
-        buffer = FeedingModel()
-        get()
+        
+        let appname = userDefault.string(forKey: PARAM_APPNAME)
+        if appname != nil {
+            getSetting()
+        } else {
+            saveSetting()
+        }
+        
+        //get()
     }
     
-    func getPetName() -> String {
-        return feedingData.petName
+    func getPetName() -> String? {
+            return self.petName
     }
     
-    func setPetName(_ name: String) {
-        feedingData.petName = name
+    func setPetName(_ petName: String) {
+        self.petName = petName
+        logger.debug("petName set to \(self.petName)")
     }
+    
     
     func getRecordsNumber() -> Int {
-        return urlSession.recordNumber
+        return Int(recordNumber)
     }
     
     func setRecordsNumber(_ number: Int) {
-        urlSession.recordNumber = number
+        self.recordNumber = Float(number)
+        logger.debug("recordNumber set to \(self.recordNumber)")
     }
     
     func getUrl() -> String {
-        return urlSession.url
+        return url
     }
     
     func setUrl(_ url: String) {
-        urlSession.url = url
+        self.url = url
+    }
+    
+    func getFeeder() -> String {
+        return feeder
+    }
+    
+    func setFeeder(_ feeder: String) {
+        self.feeder = feeder
+        logger.debug("feeder set to \(self.feeder)")
     }
     
     func getFeedingRecords() -> Array<FeedingRecord> {
-        return feedingData.feedingRecords
+        return feedingRecords
     }
     
     func setFeedingRecords(_ records: Array<FeedingRecord>) {
-        Logger.info("SET FEEDINGRECORD = ",records)
-        feedingData.feedingRecords = records
+        self.feedingRecords = records
+    }
+    
+    func getDeviceToken() -> String {
+        return deviceToken
+    }
+    
+    func setDeviceToken(_ deviceToken: String) {
+        self.deviceToken = deviceToken
     }
     
     func getUrlBaseParameters() -> String {
-        return "\(PARAM_PETNAME)=\(getPetName())&\(PARAM_RECORDNUMBER)=\(String(urlSession.recordNumber))"
+        return "\(PARAM_PETNAME)=\(String(describing: petName.lowercased()))&\(PARAM_RECORDNUMBER)=\(String(getRecordsNumber()))"
     }
     
-    func add(_ portion: Int) {
+    func add(_ portion: Float) {
         let feedingRecord = CloudantFeedingRecord()
-        let parameters = "add?\(getUrlBaseParameters())&\(PARAM_FEEDER)=\(feedingRecord.feeder)&\(PARAM_PORTION)=\(String(feedingRecord.portion))&\(PARAM_TIMESTAMP)=\(DateFormatters.iso8601DateFormatter.string(from:feedingRecord.timestamp))"
+        let parameters = "\(ACTION_ADD)?\(getUrlBaseParameters())&\(PARAM_FEEDER)=\(getFeeder())&\(PARAM_PORTION)=\(String(portion))&\(PARAM_TIMESTAMP)=\(DateFormatters.iso8601DateFormatter.string(from:feedingRecord.timestamp))"
         dataTask(parameters)
     }
     
     func del(_ feedingRecord: FeedingRecord) {
-        let parameters = "del?\(getUrlBaseParameters())&\(PARAM_TIMESTAMP)=\(DateFormatters.iso8601DateFormatter.string(from: feedingRecord.timestamp))&\(PARAM_PORTION)=\(String(feedingRecord.portion))&\(PARAM_PORTION)=\(String(feedingRecord.feeder))"
+        let parameters = "\(ACTION_DEL)?\(getUrlBaseParameters())&\(PARAM_TIMESTAMP)=\(DateFormatters.iso8601DateFormatter.string(from: feedingRecord.timestamp))&\(PARAM_PORTION)=\(String(feedingRecord.portion))&\(PARAM_PORTION)=\(String(feedingRecord.feeder))"
         dataTask(parameters)
     }
     
-    func get(_ name: String) {
-        feedingData.petName=name
-        dataTask("get?\(getUrlBaseParameters())")
+    func sub() {
+        let parameters = "\(ACTION_SUB)?\(getUrlBaseParameters())&\(PARAM_DEVICETOKEN)=\(getFeeder())"
+        dataTask(parameters)
     }
     
-    func get() {
-        get(getPetName())
+    func unsub() {
+        let parameters = "\(ACTION_UNS)?\(getUrlBaseParameters())&\(PARAM_DEVICETOKEN)=\(getFeeder())"
+        dataTask(parameters)
     }
     
+
+    @objc func get() {
+        dataTask("\(ACTION_GET)?\(getUrlBaseParameters())")
+    }
+ 
     func dataTask(_ parameters: String) {
         let url: URL = URL(string: getUrl()+parameters)!
-        Logger.info("URL is ",url.absoluteString)
+        logger.info("dataTask URL is \(url.absoluteString)")
         let urlSession = URLSession.shared.dataTask(with: url, completionHandler: completionHandler)
         urlSession.resume()
     }
-
-/*    func dataTask(_ parameters: String) {
-        let url: URL = URL(string: getUrl()+parameters)!
-        Logger.info("URL is ",url.absoluteString)
-        let session = URLSession.shared
-        // Fetch the combine way
-        session.dataTaskPublisher(for: url)
-        // tryMap offers a way to process the response with a closure that can throw an error
-            .tryMap { element -> Data in
-                Logger.info("Start",component: "tryMap")
-                guard let response = element.response as? HTTPURLResponse,
-                      (200...299).contains(response.statusCode) else {
-                    throw URLError(.badServerResponse)
-                }
-                Logger.info("End",component: "tryMap")
-                return element.data
-            }
-        // decode the response from tryMap into a custom data structure
-            .decode(type: CloudantFeedingData.self, decoder: decoder)
-        // type erase the publisher so that its easy to handle the response in the sink subscriber
-            .eraseToAnyPublisher()
-        // convenience subscriber built into combine
-            .sink(
-                //. completion when the publisher completes with failure or no error
-                receiveCompletion: { status in
-                    Logger.info("Start",component: "receiveCompletion")
-                    switch status {
-                    case .finished:
-                        print("Completed")
-                        break
-                    case .failure(let error):
-                        print("Receiver error \(error)")
-                        break
-                    }
-                    Logger.info("end",component: "receiveCompletion")
-                },
-                // receive the data
-                receiveValue: { data in
-                    Logger.info("Start",component: "receiveValue")
-                    Logger.info("cloudantFeedingData = ",data._id)
-                    var feedingRecords: [FeedingRecord] = []
-                    for cloudantFeedingRecord in data.records {
-                        Logger.info(cloudantFeedingRecord.timestamp)
-                        let feedingRecord = FeedingRecord(timestamp: cloudantFeedingRecord.timestamp, feeder: cloudantFeedingRecord.feeder, portion: cloudantFeedingRecord.portion)
-                        Logger.info(feedingRecord)
-                        feedingRecords.append(feedingRecord)
-                    }
-                    DispatchQueue.main.async {
-                        self.data.feedingRecords = feedingRecords
-                    }
-                    print("Data received \(data)")
-                    Logger.info("End",component: "receiveValue")
-                    
-                }
-            )
-            .store(in: &cancellable)
-    }*/
     
     func completionHandler(data: Data?, response: URLResponse?, error: Error?) {
-        Logger.component = "completionHandler"
-    
-        Logger.info("Start")
-       
         if let error = error {
-            Logger.error(error)
+            logger.error("\(error.localizedDescription)")
+            dispatch([])
             return
         }
         guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
-            Logger.error("(200...299).contains(response.statusCode)")
+            logger.error("Returned 200...299 statsu code")
+            dispatch([])
             return
         }
         if let mimeType = response.mimeType, mimeType != "application/json" {
-            Logger.error("mimeType is ",mimeType)
+            logger.error("mimeType is \(mimeType)")
+            dispatch([])
             return
         }
         var feedingRecords: [FeedingRecord] = []
         if let data = data {
-            Logger.info("data = ", data.base64EncodedString())
+            logger.debug("data = \(data.base64EncodedString())")
             do {
                 let cloudantFeedingData = try decoder.decode(CloudantFeedingData.self, from: data)
-                Logger.info("cloudantFeedingData = ",cloudantFeedingData._id)
-                //var feedingRecords: [FeedingRecord] = []
-                for cloudantFeedingRecord in cloudantFeedingData.records {
-                    Logger.info(cloudantFeedingRecord.timestamp)
-                    let feedingRecord = FeedingRecord(timestamp: cloudantFeedingRecord.timestamp, feeder: cloudantFeedingRecord.feeder, portion: cloudantFeedingRecord.portion)
-                    Logger.info(feedingRecord)
-                    feedingRecords.append(feedingRecord)
-                }
-                DispatchQueue.main.async {
-                    self.feedingData.feedingRecords = feedingRecords
-                }
+                logger.debug("cloudantFeedingData = \(cloudantFeedingData._id ?? "nil")")
+                
+                guard let firstCloudantTimestamp = cloudantFeedingData.records.first?.timestamp else {return}
+                logger.debug("First Cloudant Feeding Data timestamp is \(firstCloudantTimestamp)")
+                let firstFeedingRecordTimestamp = self.feedingRecords.first?.timestamp ?? firstCloudantTimestamp.addingTimeInterval(-1)
+                logger.debug("First Feeding Records timestamp is \(firstFeedingRecordTimestamp)")
+                
+                //if firstCloudantTimestamp > firstFeedingRecordTimestamp {
+                    for cloudantFeedingRecord in cloudantFeedingData.records {
+                        let feedingRecord = FeedingRecord(timestamp: cloudantFeedingRecord.timestamp, feeder: cloudantFeedingRecord.feeder, portion: cloudantFeedingRecord.portion)
+                        logger.info("feeding record is timestamp=\(feedingRecord.timestamp), feeder=\(feedingRecord.feeder), portion=\(feedingRecord.portion)")
+                        feedingRecords.append(feedingRecord)
+                    }
+                    dispatch(feedingRecords)
+                //}
             } catch {
-                Logger.error(error)
+                logger.error("\(error)")
+                dispatch([])
             }
         }
     }
     
+    func dispatch(_ feedingRecords: [FeedingRecord]) {
+        DispatchQueue.main.async {
+            self.feedingRecords = feedingRecords
+            self.logger.debug("Dispatched")
+            self.requestNotification()
+            //self.initTimer()
+        }
+    }
+    
+    func getSetting() {
+        petName = userDefault.string(forKey: PARAM_PETNAME)!
+        logger.info("petName = \(self.petName)")
+        url = userDefault.string(forKey: PARAM_URL)!
+        logger.info("url = \(self.url)")
+        recordNumber = userDefault.float(forKey: PARAM_RECORDNUMBER)
+        logger.info("record number = \(self.recordNumber)")
+        feeder = userDefault.string(forKey: PARAM_FEEDER)!
+        logger.info("feeder = \(self.feeder)")
+        
+        feedingNext = userDefault.float(forKey: PARAM_FEEDINGNEXT)
+        logger.info("feedingNext = \(self.feedingNext)")
+        notificationBefore = userDefault.float(forKey: PARAM_NOTIFBEFORE)
+        logger.info("notificationBefore = \(self.notificationBefore)")
+        notificationEvery = userDefault.float(forKey: PARAM_NOTIFEVERY)
+        logger.info("notificationEvery = \(self.notificationEvery)")
+    }
+    
+    func saveSetting() {
+        logger.info("Save \(self.PARAM_PETNAME) = \(self.petName)")
+        userDefault.set(petName, forKey: PARAM_PETNAME)
+        logger.info("Save \(self.PARAM_FEEDER) = \(self.feeder)")
+        userDefault.set(feeder, forKey: PARAM_FEEDER)
+        logger.info("Save \(self.PARAM_RECORDNUMBER) = \(self.recordNumber)")
+        userDefault.set(recordNumber, forKey: PARAM_RECORDNUMBER)
+        logger.info("Save \(self.PARAM_URL) = \(self.url)")
+        userDefault.set(url, forKey: PARAM_URL)
+
+        logger.info("Save \(self.PARAM_FEEDINGNEXT) = \(self.feedingNext)")
+        userDefault.set(feedingNext, forKey: PARAM_FEEDINGNEXT)
+        logger.info("Save \(self.PARAM_NOTIFBEFORE) = \(self.notificationBefore)")
+        userDefault.set(notificationBefore, forKey: PARAM_NOTIFBEFORE)
+        logger.info("Save \(self.PARAM_NOTIFEVERY) = \(self.notificationEvery)")
+        userDefault.set(notificationEvery, forKey: PARAM_NOTIFEVERY)
+ 
+        logger.info("Save \(self.PARAM_APPNAME) = \(self.appname)")
+        userDefault.set(appname, forKey: PARAM_APPNAME)
+    }
+    
+    func requestNotification() {
+        
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+        logger.debug("Existing notifications cancelled")
+        
+        if feedingRecords.isEmpty {
+            return
+        }
+        
+        let timeInterval :TimeInterval = Double(feedingNext)*60 // Time interval in second
+        let feedingStart :Date = (feedingRecords.first?.timestamp.addingTimeInterval(timeInterval))!
+        logger.info("Next feeding at \(DateFormatters.anyDateFormatter.string(from: feedingStart))")
+        let content = UNMutableNotificationContent()
+        content.title = "Ne m'oublie pas à \(DateFormatters.HHmmFormatter.string(from: feedingStart))"
+        content.subtitle = "... et aussi mettre who-fed-blaise à jour"
+        content.sound = UNNotificationSound.default
+        
+        var before = notificationBefore
+        while before > 0 {
+            let timeInterval :TimeInterval = Double(Int(feedingNext)-Int(before))*60 // Time interval in second
+            let notificationStart :Date = (feedingRecords.first?.timestamp.addingTimeInterval(timeInterval))!
+            logger.debug("Notification at \(DateFormatters.anyDateFormatter.string(from: notificationStart))")
+            let dateComponents :DateComponents = Calendar.current.dateComponents([.hour, .minute], from: notificationStart)
+            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+            UNUserNotificationCenter.current().add(request)
+            before = before - notificationEvery
+        }
+    }
+    
+    /*func initTimer() {
+        let timeInterval :TimeInterval = Double(timerShortEvery)*60 // Time interval in second
+        let timer = Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(get), userInfo: nil, repeats: true)
+    }*/
+    
+    func scheduleAppRefresh() {
+       let request = BGAppRefreshTaskRequest(identifier: "eu.meandre.who-fed-blaise.refresh")
+       // Fetch no earlier than 15 minutes from now.
+       request.earliestBeginDate = Date(timeIntervalSinceNow: 60)
+
+       do {
+          try BGTaskScheduler.shared.submit(request)
+       } catch {
+          print("Could not schedule app refresh: \(error)")
+       }
+    }
+
     func setFeedingData(cloudantFeedingData: CloudantFeedingData) {
         var feedingRecords: [FeedingRecord] = []
         for cloudantFeedingRecord in cloudantFeedingData.records {
@@ -213,7 +323,6 @@ class FeedingViewModel: ObservableObject{
             let feedingRecord = FeedingRecord(timestamp: cloudantFeedingRecord.timestamp, feeder: cloudantFeedingRecord.feeder, portion: cloudantFeedingRecord.portion)
             feedingRecords.append(feedingRecord)
         }
-        //feedingData = FeedingData(petName: cloudantFeedingData._id, feedingRecords: feedingRecords)
         setFeedingRecords(feedingRecords)
     }
 }
@@ -256,7 +365,7 @@ final class DateFormatters {
     }
     static var anyDateFormatter: DateFormatter  {
         let dateFormatter = DateFormatter.init()
-        dateFormatter.dateFormat = "yyyy.MM.dd HH:mm"
+        dateFormatter.dateFormat = "EEEE yyyy.MM.dd HH:mm"
         return dateFormatter
     }
     static var logDateFormatter: DateFormatter  {
@@ -264,51 +373,13 @@ final class DateFormatters {
         dateFormatter.dateFormat = "yyyy.MM.dd HH:mm:ss.SSS"
         return dateFormatter
     }
+    static var HHmmFormatter: DateFormatter  {
+        let dateFormatter = DateFormatter.init()
+        dateFormatter.dateFormat = "HH:mm"
+        return dateFormatter
+    }
     
     init() {
-    }
-}
-
-final class Logger {
-    static var component: String?
-    static var separator: String = "]["
-    
-    static func log(_ items: Any..., level: String, component: String = "") {
-        var message: String = ""
-        for item in items {
-            message=message+"\(item)"
-        }
-        
-        /*if component == "" {
-            print(level,message,separator: separator)
-        } else {
-            print(level,component,message,separator: separator)
-        }*/
-        print(level,items)
-    }
-    
-    static func error(_ items: Any..., component: String!) {
-        log(items, level: "ERROR", component: component)
-    }
-    
-    static func warning(_ items: Any..., component: String!) {
-        log(items, level: "WARNING", component: component)
-    }
-    
-    static func info(_ items: Any..., component: String!) {
-        log(items, level: "INFO", component: component)
-    }
-    
-    static func error(_ items: Any...) {
-        log(items, level: "ERROR")
-    }
-    
-    static func warning(_ items: Any...) {
-        log(items, level: "WARNING")
-    }
-    
-    static func info(_ items: Any...) {
-        log(items, level: "INFO")
     }
 }
 

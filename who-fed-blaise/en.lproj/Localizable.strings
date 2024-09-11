@@ -7,4 +7,13 @@
 */
 "full-portion" = "Full Portion";
 "half-portion" = "Half Portion";
-"delete" = "Delete";
+"delete" = "Erase";
+
+"feeder" = "feeder";
+"record-number" = "record number";
+"next-feeding-in" = "next feeding in";
+"notification-start" = "notification start";
+"notification-frequency" = "notifcation frequency";
+"hour(s)" = "hours";
+"minute(s)" = "minute(s)";
+"before" = "before";
