@@ -23,6 +23,7 @@ struct FeedingView: View {
                             .stroke(lineWidth: 1)
                     )*/
                     .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
                     .onSubmit {
                         feedingViewModel.saveSetting()
                         feedingViewModel.get()
@@ -75,6 +76,7 @@ struct FeedingView: View {
                     )
             }
             .font(.title3)
+            
         }
     }
 }
@@ -84,11 +86,10 @@ struct RecordView: View {
     var feedingRecord: FeedingRecord
     
     var body: some View {
-        VStack {
+        VStack (alignment: .center, spacing: 0) {
             let timestamp = DateFormatters.anyDateFormatter.string(from: feedingRecord.timestamp)
             Text(timestamp)
                 .font(.title2)
-                .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
             //let portion = String(format: "%.0f", feedingRecord.portion*100)
             HStack {
@@ -100,7 +101,7 @@ struct RecordView: View {
                     
                 Text(", ")
                 Text(LocalizedStringKey("feeder"))
-                Text(": \(feedingRecord.feeder)")
+                Text(": \(feedingRecord.alias)")
                      
             }
         }

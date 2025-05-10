@@ -10,10 +10,13 @@
 		8A07DFBC28512F130079AB10 /* FeedingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A07DFBB28512F130079AB10 /* FeedingViewModel.swift */; };
 		8A0895092B4950120092AD66 /* FeedingNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A0895082B4950120092AD66 /* FeedingNotification.swift */; };
 		8A4491802AE96DBC0009A127 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A44917F2AE96DBC0009A127 /* ContentView.swift */; };
-		8A56F3DF2C388CB2003C65C1 /* HttpExecution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A56F3DE2C388CB2003C65C1 /* HttpExecution.swift */; };
+		8A50BACF2C9AA13000E8BE32 /* DateFormatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A50BACE2C9AA13000E8BE32 /* DateFormatters.swift */; };
+		8A6BAFEB2CB392770026AF97 /* Parameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6BAFEA2CB392770026AF97 /* Parameters.swift */; };
+		8A6BAFED2CB39C9F0026AF97 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6BAFEC2CB39C9F0026AF97 /* Logger.swift */; };
 		8A6BD63F2C12F77F00CEF88B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6BD63E2C12F77F00CEF88B /* AppDelegate.swift */; };
 		8A76C1A1285975A600CCAA49 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A76C19C285974ED00CCAA49 /* NetworkExtension.framework */; };
 		8AA9FC5629D0DD4000D37A7C /* FeedingModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AA9FC5529D0DD4000D37A7C /* FeedingModel.swift */; };
+		8AB12E162C98BCE300D53D49 /* ApplePushNotificationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AB12E152C98BCE300D53D49 /* ApplePushNotificationModel.swift */; };
 		8AC2AEF0282CD46D00336FAC /* who_fed_blaiseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2AEEF282CD46D00336FAC /* who_fed_blaiseApp.swift */; };
 		8AC2AEF2282CD46D00336FAC /* FeedingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC2AEF1282CD46D00336FAC /* FeedingView.swift */; };
 		8AC2AEF4282CD46F00336FAC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8AC2AEF3282CD46F00336FAC /* Assets.xcassets */; };
@@ -46,11 +49,14 @@
 		8A07DFBB28512F130079AB10 /* FeedingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedingViewModel.swift; sourceTree = "<group>"; };
 		8A0895082B4950120092AD66 /* FeedingNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedingNotification.swift; sourceTree = "<group>"; };
 		8A44917F2AE96DBC0009A127 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		8A56F3DE2C388CB2003C65C1 /* HttpExecution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpExecution.swift; sourceTree = "<group>"; };
+		8A50BACE2C9AA13000E8BE32 /* DateFormatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateFormatters.swift; sourceTree = "<group>"; };
+		8A6BAFEA2CB392770026AF97 /* Parameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parameters.swift; sourceTree = "<group>"; };
+		8A6BAFEC2CB39C9F0026AF97 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		8A6BD63E2C12F77F00CEF88B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8A76C19A285974EC00CCAA49 /* who-fed-blaise.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "who-fed-blaise.entitlements"; sourceTree = "<group>"; };
 		8A76C19C285974ED00CCAA49 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
 		8AA9FC5529D0DD4000D37A7C /* FeedingModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedingModel.swift; sourceTree = "<group>"; };
+		8AB12E152C98BCE300D53D49 /* ApplePushNotificationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplePushNotificationModel.swift; sourceTree = "<group>"; };
 		8AC15EEB28304881000CC791 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8AC2AEEC282CD46D00336FAC /* who-fed-blaise.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "who-fed-blaise.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AC2AEEF282CD46D00336FAC /* who_fed_blaiseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = who_fed_blaiseApp.swift; sourceTree = "<group>"; };
@@ -128,9 +134,8 @@
 			children = (
 				8AA9FC5529D0DD4000D37A7C /* FeedingModel.swift */,
 				8AC2AEF1282CD46D00336FAC /* FeedingView.swift */,
-				8A44917F2AE96DBC0009A127 /* ContentView.swift */,
 				8A07DFBB28512F130079AB10 /* FeedingViewModel.swift */,
-				8A56F3DE2C388CB2003C65C1 /* HttpExecution.swift */,
+				8A50BACE2C9AA13000E8BE32 /* DateFormatters.swift */,
 				8A0895082B4950120092AD66 /* FeedingNotification.swift */,
 				8AE7467B2A0104B600E9F168 /* SettingView.swift */,
 				8ACE5638285A1DE200458C4B /* Localizable.strings */,
@@ -140,6 +145,10 @@
 				8AC2AEF3282CD46F00336FAC /* Assets.xcassets */,
 				8AC2AEF5282CD46F00336FAC /* Preview Content */,
 				8A6BD63E2C12F77F00CEF88B /* AppDelegate.swift */,
+				8AB12E152C98BCE300D53D49 /* ApplePushNotificationModel.swift */,
+				8A6BAFEA2CB392770026AF97 /* Parameters.swift */,
+				8A6BAFEC2CB39C9F0026AF97 /* Logger.swift */,
+				8A44917F2AE96DBC0009A127 /* ContentView.swift */,
 			);
 			path = "who-fed-blaise";
 			sourceTree = "<group>";
@@ -233,7 +242,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1330;
-				LastUpgradeCheck = 1510;
+				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					8AC2AEEB282CD46D00336FAC = {
 						CreatedOnToolsVersion = 13.3.1;
@@ -305,12 +314,15 @@
 				8A6BD63F2C12F77F00CEF88B /* AppDelegate.swift in Sources */,
 				8AC2AEF2282CD46D00336FAC /* FeedingView.swift in Sources */,
 				8AE7467C2A0104B600E9F168 /* SettingView.swift in Sources */,
-				8A56F3DF2C388CB2003C65C1 /* HttpExecution.swift in Sources */,
+				8A50BACF2C9AA13000E8BE32 /* DateFormatters.swift in Sources */,
 				8A0895092B4950120092AD66 /* FeedingNotification.swift in Sources */,
+				8AB12E162C98BCE300D53D49 /* ApplePushNotificationModel.swift in Sources */,
 				8A4491802AE96DBC0009A127 /* ContentView.swift in Sources */,
 				8AC2AEF0282CD46D00336FAC /* who_fed_blaiseApp.swift in Sources */,
+				8A6BAFED2CB39C9F0026AF97 /* Logger.swift in Sources */,
 				8A07DFBC28512F130079AB10 /* FeedingViewModel.swift in Sources */,
 				8AA9FC5629D0DD4000D37A7C /* FeedingModel.swift in Sources */,
+				8A6BAFEB2CB392770026AF97 /* Parameters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +376,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -426,6 +439,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
@@ -549,10 +563,10 @@
 		8AC2AF14282CD46F00336FAC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 76RX94Q677;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				MARKETING_VERSION = 1.0;
@@ -568,10 +582,10 @@
 		8AC2AF15282CD46F00336FAC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 76RX94Q677;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				MARKETING_VERSION = 1.0;
@@ -587,9 +601,9 @@
 		8AC2AF17282CD46F00336FAC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 76RX94Q677;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "meandre.eu.who-fed-blaiseUITests";
@@ -604,9 +618,9 @@
 		8AC2AF18282CD46F00336FAC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 76RX94Q677;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "meandre.eu.who-fed-blaiseUITests";

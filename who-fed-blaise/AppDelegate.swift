@@ -7,14 +7,17 @@
 
 import Foundation
 import UIKit
-import os
+//import os
 
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
-    let logger = Logger(subsystem: "who-fed-blaise", category: "AppDelegate")
+    let logger = Logger(Logger.PARAMETER_DEBUG, category: "AppDelegate")
     
+    //static var deviceToken: String = ""
+
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        logger.debug("func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool")
         UIApplication.shared.registerForRemoteNotifications()
         UNUserNotificationCenter.current().delegate = self
         return true
@@ -22,17 +25,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     
     func application(_ application: UIApplication,
                      didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        logger.debug("func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error)")
         logger.error("Remote notification is unavailable: \(error.localizedDescription)")
     }
     
-    /*func application(_ application: UIApplication,
+    func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        forwardTokenToServer(token: <#T##Data#>)
-    }*/
+        logger.debug("func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data)")
+        forwardTokenToServer(token: deviceToken)
+    }
     
-    /*func forwardTokenToServer(token: Data) {
-        let tokenComponents = token.map { data in String(format: "%02.2hhx", data)}
+    func forwardTokenToServer(token: Data) {
+        logger.debug("func forwardTokenToServer(token: Data)")
+        logger.debug("data = \(token.count)")
+        let tokenComponents = token.map {
+            data in String(format: "%02.2hhx", data)
+        }
         let deviceTokenString = tokenComponents.joined()
-    }*/
+        logger.debug("token as string (\(deviceTokenString.count)) = \(deviceTokenString)")
+        Parameters.setDeviceToken(deviceTokenString)
+        //logger.info("deviceToken = \(AppDelegate.deviceToken)")
+        //ApplePushNotificationModel.deviceTokenString = tokenComponents.joined()
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        UIApplication.shared.applicationIconBadgeNumber = 0
+    }
 }
 
