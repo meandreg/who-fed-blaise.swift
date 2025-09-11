@@ -29,3 +29,10 @@ struct who_fed_blaiseApp: App {
     }
 }
 
+func isSimulator() -> Bool {
+    #if targetEnvironment(simulator)
+        return true
+    #else
+        return false
+    #endif
+}

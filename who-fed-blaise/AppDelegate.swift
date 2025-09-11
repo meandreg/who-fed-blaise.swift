@@ -32,18 +32,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication,
                      didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         logger.debug("func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data)")
-        forwardTokenToServer(token: deviceToken)
+        let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+        forwardTokenToServer(token: token)
     }
     
-    func forwardTokenToServer(token: Data) {
+    func forwardTokenToServer(token: String) {
         logger.debug("func forwardTokenToServer(token: Data)")
-        logger.debug("data = \(token.count)")
-        let tokenComponents = token.map {
-            data in String(format: "%02.2hhx", data)
-        }
-        let deviceTokenString = tokenComponents.joined()
-        logger.debug("token as string (\(deviceTokenString.count)) = \(deviceTokenString)")
-        Parameters.setDeviceToken(deviceTokenString)
+        logger.debug("token = \(token)")
+        Parameters.setDeviceToken(token)
         //logger.info("deviceToken = \(AppDelegate.deviceToken)")
         //ApplePushNotificationModel.deviceTokenString = tokenComponents.joined()
     }

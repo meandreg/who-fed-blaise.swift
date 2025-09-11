@@ -7,6 +7,7 @@
 
 import Foundation
 import os
+import SwiftUI
 
 struct Parameters {
     
@@ -19,6 +20,16 @@ struct Parameters {
 
     static func setAppName(_ appName: String) {
         userDefaults.set(appName, forKey: Labels.APPNAME)
+    }
+
+    static func getCustomizeWallPaper() -> Bool {
+        let result = UserDefaults.standard.bool(forKey: Labels.CUSTOMIZEWALLPAPER)
+        logger.info(String(format: "CUSTOMIZEWALLPAPER: %@", String(result)))
+        return result
+    }
+
+    static func setCustomizeWallPaper(_ customizeWallPaper: Bool) {
+        userDefaults.set(customizeWallPaper, forKey: Labels.CUSTOMIZEWALLPAPER)
     }
 
     static func getAccount() -> String! {
@@ -119,9 +130,35 @@ struct Parameters {
     static func setNotifyEvery(_ notifyEvery: Int) {
         userDefaults.set(notifyEvery, forKey: Labels.NOTIFEVERY)
     }
-}
+
+    static func getWallPaperPath() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0].appendingPathComponent(Parameters.getPetName() + ".jpg")
+    }
+
+    static func getWallPaperUIImage() -> UIImage? {
+        let fileURL = getWallPaperPath()
+        do {
+            let imageData = try Data(contentsOf: fileURL)
+            return UIImage(data: imageData)
+        } catch {
+            print("Error loading image : \(error)")
+        }
+        return nil
+    }
+    
+    static func getWallPaperImage() -> Image {
+        let uiImageData = getWallPaperUIImage()
+        if uiImageData != nil {
+            return Image(uiImage: uiImageData!)
+        }
+        return Image(Defaults.WALLPAPERNAME)
+    }
+ }
 
 struct Labels {
+    static let WALLPAPERNAME="wallpapername"
+    static let CUSTOMIZEWALLPAPER="customizewallpaper"
     static let ACTION="action"
     static let APPNAME="appname"
     static let URL="url"
@@ -156,6 +193,8 @@ struct Labels {
 
 struct Defaults {
     static let APPNAME:String="who-fed-blaise"
+    static let CUSTOMIZEWALLPAPER:Bool=true
+    static let WALLPAPERNAME:String="Blaise"
     static let URL:String="http://hostname:port"
     static let ACCOUNT:String="alias@email.com"
     static let RECORDNUMBER:Int=3

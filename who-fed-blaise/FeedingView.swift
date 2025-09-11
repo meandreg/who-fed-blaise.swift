@@ -18,17 +18,13 @@ struct FeedingView: View {
             HStack {
                 TextField("Pet Name", text: $feedingViewModel.petName)
                     .padding()
-                    /*.overlay(
-                        RoundedRectangle(cornerRadius: 0)
-                            .stroke(lineWidth: 1)
-                    )*/
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                     .onSubmit {
                         feedingViewModel.saveSetting()
                         feedingViewModel.get()
                     }
-                
+                    
                 Label("", systemImage: "arrow.clockwise")
                     .onTapGesture {
                         feedingViewModel.get()
@@ -36,23 +32,18 @@ struct FeedingView: View {
             }
             .font(.largeTitle)
             
+            Rectangle()
+                .frame(maxHeight: .infinity)
+                .opacity(0)
+            
             List {
-                ForEach(feedingViewModel.getFeedingRecords(), id: \.timestamp, content: {
-                    feedingRecord in
-                    RecordView(feedingRecord: feedingRecord)
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                feedingViewModel.del(feedingRecord)
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                        }
-                        .listRowInsets(EdgeInsets())
+                ForEach(feedingViewModel.getFeedingRecords(), id: \.timestamp, content: { feedingRecord in
+                    RecordView(feedingViewModel: feedingViewModel, feedingRecord: feedingRecord)
                 })
             }
             .listStyle(.plain)
+            .opacity(0.5)
             
-            //.scrollContentBackground(Visibility.hidden)
             
             HStack {
                 Text(LocalizedStringKey("full-portion"))
@@ -81,32 +72,4 @@ struct FeedingView: View {
     }
 }
 
-
-struct RecordView: View {
-    var feedingRecord: FeedingRecord
-    
-    var body: some View {
-        VStack (alignment: .center, spacing: 0) {
-            let timestamp = DateFormatters.anyDateFormatter.string(from: feedingRecord.timestamp)
-            Text(timestamp)
-                .font(.title2)
-                .frame(maxWidth: .infinity)
-            //let portion = String(format: "%.0f", feedingRecord.portion*100)
-            HStack {
-                if feedingRecord.portion == 1 {
-                    Text(LocalizedStringKey("full-portion"))
-                } else {
-                    Text(LocalizedStringKey("half-portion"))
-                }
-                    
-                Text(", ")
-                Text(LocalizedStringKey("feeder"))
-                Text(": \(feedingRecord.alias)")
-                     
-            }
-        }
-        .hoverEffect(.highlight)
-        .padding()
-    }
-}
 

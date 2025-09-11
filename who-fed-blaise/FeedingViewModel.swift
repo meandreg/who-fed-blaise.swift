@@ -10,6 +10,7 @@ import Combine
 //import os
 import UserNotifications
 import BackgroundTasks
+import SwiftUI
 
 class SqlFeedingRecord: Decodable {
     var timestamp: Date = Date()
@@ -19,7 +20,6 @@ class SqlFeedingRecord: Decodable {
     func toJson() -> String {
         return "{\(Labels.TIMESTAMP): \(self.timestamp), \(Labels.PORTION): \(self.portion), \(Labels.ALIAS): \(self.alias), \(Labels.FEEDER): \(self.feeder)}"
     }
-
 }
 
 class SqlFeedingData: Decodable {
@@ -44,6 +44,7 @@ class SqlResponse: Decodable {
 }
 
 class HttpRequestBody: Encodable {
+    var isProduction: Bool = !isSimulator()
     var action: String!
     var account: String!
     var petName: String!
@@ -75,6 +76,7 @@ class HttpRequestBody: Encodable {
     }
     
     enum CodingKeys : String, CodingKey {
+        case isProduction = "isproduction"
         case action
         case account
         case petName = "petname"
@@ -92,7 +94,7 @@ class FeedingViewModel: ObservableObject{
     
     let appname = Parameters.getAppName()
     let logger = Logger(Parameters.getLogLevel(), category: "FeedingViewModel")
-
+    
     @Published var recordNumber: Float = Parameters.getRecordNumber()
     //private(set) var deviceToken: String = Parameters.getDeviceToken()
     private(set) var returnCode: Int?
@@ -103,7 +105,7 @@ class FeedingViewModel: ObservableObject{
     @Published var notificationBefore :Float = Float(Parameters.getNotificationBefore())
     // Interval between each notification
     @Published var notificationEvery :Float = Float(Parameters.getNotifyEvery())
-
+    
     
     @Published var petName: String = Parameters.getPetName()
     //var previousPetName = Parameters.getPetName()
@@ -114,12 +116,16 @@ class FeedingViewModel: ObservableObject{
     @Published var password: String = Parameters.getPassword()
     @Published var logLevel: String = Parameters.getLogLevel()
     
+    @Published var customizeWallPaper: Bool = Parameters.getCustomizeWallPaper()
+    @Published var wallPaperImage: Image = Parameters.getWallPaperImage()
+    @Published var wallPaperUIImage: UIImage? = Parameters.getWallPaperUIImage()
+    
     let decoder: JSONDecoder
     
     init() {
         decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
-        //UIApplication.shared.applicationIconBadgeNumber = 0
+        
     }
     
     func getAccount() -> String? {
@@ -131,8 +137,8 @@ class FeedingViewModel: ObservableObject{
         logger.debug("\(Labels.ACCOUNT) set to \(self.account)")
     }
     
-    func getPetName() -> String? {
-            return self.petName
+    func getPetName() -> String {
+        return self.petName
     }
     
     func setPetName(_ petName: String) {
@@ -183,46 +189,47 @@ class FeedingViewModel: ObservableObject{
     func setFeedingRecords(_ records: Array<FeedingRecord>) {
         self.feedingRecords = records
     }
-
+    
+    func getFeedingRecord(_ index: Int) -> FeedingRecord {
+        return getFeedingRecords()[index]
+    }
+    
     /*func getUrlBaseParameters() -> String {
-        var _temp_ = Labels.PETNAME+"="+getPetName()!
-        _temp_ = _temp_+"&"+Labels.ACCOUNT+"="+getAccount()!
-        _temp_ = _temp_+"&"+Labels.FEEDER+"="+getFeeder()
-        _temp_ = _temp_+"&"+Labels.RECORDNUMBER+"="+String(getRecordsNumber())
-        _temp_ = _temp_+"&"+Labels.DEVICETOKEN+"="+Parameters.getDeviceToken()
-        if ( !getLogLevel().elementsEqual(Logger.PARAMETER_DEFAULT) ) {
-            _temp_ = _temp_+"&"+Labels.LOGLEVEL+"="+getLogLevel()
-        }
-        return _temp_
-    }*/
+     var _temp_ = Labels.PETNAME+"="+getPetName()!
+     _temp_ = _temp_+"&"+Labels.ACCOUNT+"="+getAccount()!
+     _temp_ = _temp_+"&"+Labels.FEEDER+"="+getFeeder()
+     _temp_ = _temp_+"&"+Labels.RECORDNUMBER+"="+String(getRecordsNumber())
+     _temp_ = _temp_+"&"+Labels.DEVICETOKEN+"="+Parameters.getDeviceToken()
+     if ( !getLogLevel().elementsEqual(Logger.PARAMETER_DEFAULT) ) {
+     _temp_ = _temp_+"&"+Labels.LOGLEVEL+"="+getLogLevel()
+     }
+     return _temp_
+     }*/
     
     func add(_ portion: Float) {
         //let feedingRecord = SqlFeedingRecord()
         //let parameters=Labels.ACTION_ADD
         /*parameters=parameters+"?"+getUrlBaseParameters()
-        parameters=parameters+"&"+Labels.PORTION+"="+String(portion)
-        parameters=parameters+"&"+Labels.TIMESTAMP+"="+DateFormatters.mariadbDateFormatter.string(from:feedingRecord.timestamp)*/
+         parameters=parameters+"&"+Labels.PORTION+"="+String(portion)
+         parameters=parameters+"&"+Labels.TIMESTAMP+"="+DateFormatters.mariadbDateFormatter.string(from:feedingRecord.timestamp)*/
         let httpRequestBody = HttpRequestBody(action: Labels.ACTION_ADD ,feedingViewModel: self,
-            timestamp: Date(), portion: portion)
+                                              timestamp: Date(), portion: portion)
         dataTask(httpBody: httpRequestBody)
     }
     
     func del(_ feedingRecord: FeedingRecord) {
-        //let parameters = Labels.ACTION_DEL
-        //parameters=parameters+"?"+getUrlBaseParameters()
-        //parameters=parameters+"&"+Labels.TIMESTAMP+"="+DateFormatters.mariadbDateFormatter.string(from: feedingRecord.timestamp)
         let httpRequestBody = HttpRequestBody(action: Labels.ACTION_DEL ,feedingViewModel: self,
-            timestamp: feedingRecord.timestamp)
+                                              timestamp: feedingRecord.timestamp)
         dataTask(httpBody: httpRequestBody)
     }
-
+    
     @objc func get() {
         if petName=="" {return}
         //let url = Labels.ACTION_GET+"?"+getUrlBaseParameters()
         let httpRequestBody = HttpRequestBody(action: Labels.ACTION_GET ,feedingViewModel: self)
         dataTask(httpBody: httpRequestBody)
     }
- 
+    
     func dataTask(httpBody: HttpRequestBody?) {
         if let url = URL(string: getUrl()+"/"+Labels.APPFEEDING+"/") {
             logger.info("dataTask URL is \(url.absoluteString)")
@@ -241,18 +248,6 @@ class FeedingViewModel: ObservableObject{
         }
     }
     
-    /*
-    func notificationTask(_ parameters: String) {
-        let url: URL = URL(string: getUrl()+"/"+Labels.APPNOTIFICATION+"/"+parameters)!
-        logger.info("notificationTask URL is \(url.absoluteString)")
-        var request: URLRequest = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
-        request.httpBody = try JSONEncoder().encode()
-        let urlSession = URLSession.shared.dataTask(with: url, completionHandler: notificationHandler)
-        urlSession.resume()
-    }
-    */
     func completionHandler(data: Data?, response: URLResponse?, error: Error?) {
         if let error = error {
             logger.error("\(error.localizedDescription)")
@@ -282,12 +277,12 @@ class FeedingViewModel: ObservableObject{
                 logger.debug("First Feeding Records timestamp is \(firstFeedingRecordTimestamp)")
                 
                 //if firstCloudantTimestamp > firstFeedingRecordTimestamp {
-                    for sqlFeedingRecord in sqlFeedingData.records {
-                        let feedingRecord = FeedingRecord(timestamp: sqlFeedingRecord.timestamp, feeder: sqlFeedingRecord.feeder, alias: sqlFeedingRecord.alias, portion: sqlFeedingRecord.portion)
-                        logger.debug("feeding record is timestamp=\(feedingRecord.timestamp), feeder=\(feedingRecord.feeder), portion=\(feedingRecord.portion)")
-                        feedingRecords.append(feedingRecord)
-                    }
-                    dispatch(feedingRecords)
+                for sqlFeedingRecord in sqlFeedingData.records {
+                    let feedingRecord = FeedingRecord(timestamp: sqlFeedingRecord.timestamp, feeder: sqlFeedingRecord.feeder, alias: sqlFeedingRecord.alias, portion: sqlFeedingRecord.portion)
+                    logger.debug("feeding record is timestamp=\(feedingRecord.timestamp), feeder=\(feedingRecord.feeder), portion=\(feedingRecord.portion)")
+                    feedingRecords.append(feedingRecord)
+                }
+                dispatch(feedingRecords)
                 //}
             } catch {
                 logger.error("\(error)")
@@ -379,30 +374,55 @@ class FeedingViewModel: ObservableObject{
         }
     }
     
-    /*func initTimer() {
-        let timeInterval :TimeInterval = Double(timerShortEvery)*60 // Time interval in second
-        let timer = Timer.scheduledTimer(timeInterval: timeInterval, target: self, selector: #selector(get), userInfo: nil, repeats: true)
-    }*/
-    
     func scheduleAppRefresh() {
-       let request = BGAppRefreshTaskRequest(identifier: "eu.meandre.who-fed-blaise.refresh")
-       // Fetch no earlier than 15 minutes from now.
-       request.earliestBeginDate = Date(timeIntervalSinceNow: 60)
-
-       do {
-          try BGTaskScheduler.shared.submit(request)
-       } catch {
-          print("Could not schedule app refresh: \(error)")
-       }
+        let request = BGAppRefreshTaskRequest(identifier: "eu.meandre.who-fed-blaise.refresh")
+        // Fetch no earlier than 15 minutes from now.
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 60)
+        
+        do {
+            try BGTaskScheduler.shared.submit(request)
+        } catch {
+            print("Could not schedule app refresh: \(error)")
+        }
     }
-
+    
     func setFeedingData(cloudantFeedingData: SqlFeedingData) {
         var feedingRecords: [FeedingRecord] = []
         for cloudantFeedingRecord in cloudantFeedingData.records {
-            
             let feedingRecord = FeedingRecord(timestamp: cloudantFeedingRecord.timestamp, feeder: cloudantFeedingRecord.feeder, alias: cloudantFeedingRecord.alias, portion: cloudantFeedingRecord.portion)
             feedingRecords.append(feedingRecord)
         }
         setFeedingRecords(feedingRecords)
+    }
+    /*
+    func getWallPaperPath() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let result = paths[0].appendingPathComponent(petName + ".jpg")
+        logger.info("Wallpaper path: \(result)")
+        return result
+    }
+    
+    func getWallPaperUIImage() -> UIImage? {
+        let fileURL = getWallPaperPath()
+        do {
+            let imageData = try Data(contentsOf: fileURL)
+            return UIImage(data: imageData)
+        } catch {
+            print("Error loading image : \(error)")
+        }
+        return nil
+    }
+    
+    func getWallPaperImage() -> Image {
+        let uiImageData = getWallPaperUIImage()
+        if uiImageData != nil {
+            return Image(uiImage: uiImageData!)
+        }
+        return Image(Defaults.WALLPAPERNAME)
+    }
+    */
+    func loadWallPaperImage() {
+        guard let uiImage = wallPaperUIImage else { return }
+        wallPaperImage = Image(uiImage: uiImage)
     }
 }

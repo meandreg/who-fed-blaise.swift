@@ -20,7 +20,7 @@ struct SettingView: View {
             FeederPasswordTextFields(feeder: $feedingViewModel.feeder, password: $feedingViewModel.password)
             LabeledTextField(label: Labels.URL.uppercased(), value: $feedingViewModel.url)
             
-            SliderText(min: 0, max: 10,
+            SliderText(min: 1, max: 10,
                        label1: "record-number",
                        label2: "",
                        variable: $feedingViewModel.recordNumber,
@@ -34,7 +34,7 @@ struct SettingView: View {
                        modulo:  60
             )
             
-            SliderText(min: 0, max: 60,
+            SliderText(min: 1, max: 60,
                        label1: "notification-start",
                        label2: "minute(s)",
                        variable: $feedingViewModel.notificationBefore,
