@@ -7,11 +7,11 @@
 
 import SwiftUI
 import UserNotifications
-import os
+//import os
 
 class NotificationManager {
     
-    let logger = Logger(subsystem: "who-fed-blaise", category: "FeedingNotification")
+    let logger = Logger(Logger.PARAMETER_INFO, category: "NotificationManager")
     
     static let notificatioManager = NotificationManager()
     
@@ -19,9 +19,9 @@ class NotificationManager {
         let notificationOptions: UNAuthorizationOptions = [.alert, .sound, .badge]
         UNUserNotificationCenter.current().requestAuthorization(options: notificationOptions) {(success, error) in
             if let error = error {
-                self.logger.info("Request notifocation authorization error: \(error)")
+                self.logger.info("Request notification authorization error: \(error)")
             } else {
-                self.logger.info("Request notifocation authorization success")
+                self.logger.info("Request notification authorization success")
             }
         }
     }

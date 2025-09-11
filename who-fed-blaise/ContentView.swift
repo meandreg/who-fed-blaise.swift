@@ -12,45 +12,73 @@ struct ContentView: View {
     @ObservedObject var feedingViewModel: FeedingViewModel
 
     @State private var selection = 0
-
+   /* @State var wallPaperImage: Image = Parameters.getWallPaperImage()
+    @State var wallPaperUIImage: UIImage? = Parameters.getWallPaperUIImage()
+    @State var customizeWallPaper: Bool = Parameters.getCustomizeWallPaper()*/
+    
+    let logger = Logger(Logger.PARAMETER_DEBUG, category: "ContentView")
+    
     var body: some View {
         
-        //GeometryReader {
-            //geo in
-            
-            ZStack {
-                /*Image("Wallpaper")
-                    .resizable()
-                    .scaledToFill()
-                    .edgesIgnoringSafeArea(.all)
-                    .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
-                    .opacity(1.0)*/
-                
-                TabView (selection: $selection,
-                         content:  {
-                    FeedingView(feedingViewModel: feedingViewModel)
-                        .tabItem {
-                            Label("Feeding Board", systemImage: "basket")
-                        }
-                        .tag(0)
-                        .onAppear(perform: {
-                            NotificationManager.notificatioManager.requestNotification()
-                            feedingViewModel.get()
-                        })
-                        .background(
-                            Image("Wallpaper")
-                            .resizable()
-                            )
-                    
-                    SettingView(feedingViewModel: feedingViewModel)
+        ZStack {
+            TabView (selection: $selection,
+                     content:  {
+                FeedingView(feedingViewModel: feedingViewModel)
                     .tabItem {
-                        Label("Setting", systemImage: "gearshape")
+                        Label(LocalizedStringKey("feeding-board"), systemImage: "list.bullet.rectangle")
+                    }
+                    .tag(0)
+                    .onAppear(perform: {
+                        NotificationManager.notificatioManager.requestNotification()
+                        feedingViewModel.get()
+                    })
+                    .background(
+                        feedingViewModel.wallPaperImage.resizable()
+                    )
+                
+                FeedingViewClaire(feedingViewModel: feedingViewModel)
+                    .tabItem {
+                        Label(LocalizedStringKey("for-claire"), systemImage: "heart.fill")
                     }
                     .tag(1)
-                })
-            }
-        //}
+                    .onAppear(perform: {
+                        NotificationManager.notificatioManager.requestNotification()
+                        feedingViewModel.get()
+                    })
+                    .background(
+                        feedingViewModel.wallPaperImage.resizable()
+                    )
+                
+                SettingView(feedingViewModel: feedingViewModel)
+                    .tabItem {
+                        Label(LocalizedStringKey("setting"), systemImage: "gearshape")
+                    }
+                    .tag(2)
+                
+                WallPaperView(feedingViewModel: feedingViewModel)
+                    .tabItem {
+                        Label("WallPaper", systemImage: "photo")
+                    }
+                    .tag(3)
+                    .background(
+                        feedingViewModel.wallPaperImage.resizable()
+                    )
+                    .onTapGesture(perform: {
+                        feedingViewModel.customizeWallPaper.toggle()
+                    })
+            })
+        }
+        .sheet(isPresented: $feedingViewModel.customizeWallPaper) {
+            WallPaperViewController(wallPaperUIImage: $feedingViewModel.wallPaperUIImage)
+        }
+        .onChange(of: feedingViewModel.wallPaperUIImage) { _ in feedingViewModel.loadWallPaperImage() }
     }
+    /*
+    func loadImage() {
+        guard let uiImage = feedingViewModel.wallPaperUIImage else { return }
+        feedingViewModel.wallPaperImage = Image(uiImage: uiImage)
+    }
+    */
 }
 
 

@@ -10,5 +10,7 @@ import Foundation
 struct FeedingRecord {
     var timestamp: Date
     var feeder: String
+    var alias: String
     var portion: Float
 }
+
