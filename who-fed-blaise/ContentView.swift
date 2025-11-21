@@ -68,9 +68,9 @@ struct ContentView: View {
                     })
             })
         }
-        .sheet(isPresented: $feedingViewModel.customizeWallPaper) {
+        /*.sheet(isPresented: $feedingViewModel.customizeWallPaper) {
             WallPaperViewController(wallPaperUIImage: $feedingViewModel.wallPaperUIImage)
-        }
+        }*/
         .onChange(of: feedingViewModel.wallPaperUIImage) { _ in feedingViewModel.loadWallPaperImage() }
     }
     /*
