@@ -137,12 +137,11 @@ struct Parameters {
     }
 
     static func getWallPaperUIImage() -> UIImage? {
-        let fileURL = getWallPaperPath()
         do {
-            let imageData = try Data(contentsOf: fileURL)
-            return UIImage(data: imageData)
+            let uiImage = try Data(contentsOf: getWallPaperPath())
+            return UIImage(data: uiImage)
         } catch {
-            print("Error loading image : \(error)")
+            print("Error loading image from to \(getWallPaperPath()) : \(error)")
         }
         return nil
     }
@@ -154,11 +153,25 @@ struct Parameters {
         }
         return Image(Defaults.WALLPAPERNAME)
     }
+    
+    static func setWallPaperUIImage(_ uiImage: UIImage) {
+        do {
+            try uiImage.jpegData(compressionQuality: 0.8)?.write(to: getWallPaperPath())
+            logger.info("Save new UIImage to \(getWallPaperPath())")
+        } catch {
+            logger.error("Failed to save UIImage to \(getWallPaperPath()) : \(error)")
+        }
+    }
+    
+
  }
 
 struct Labels {
     static let WALLPAPERNAME="wallpapername"
+    static let WALLPAPERMAGNIFYBY="wallpapermagnifyby"
+    static let WALLPAPEROFFSET="wallpaperoffset"
     static let CUSTOMIZEWALLPAPER="customizewallpaper"
+    
     static let ACTION="action"
     static let APPNAME="appname"
     static let URL="url"
@@ -189,6 +202,9 @@ struct Labels {
 
     static let RETURNCODE="returncode"
     static let MESSAGE="message"
+    
+    static let FEEDING_ENABLED=Color.black
+    static let FEEDING_DISABLED=Color.gray
 }
 
 struct Defaults {

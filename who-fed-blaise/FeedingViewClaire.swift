@@ -18,7 +18,6 @@ struct FeedingViewClaire: View {
     var body: some View {
         
         VStack {
-            
             VStack {
                 HStack {
                     TextField("Pet Name", text: $feedingViewModel.petName)

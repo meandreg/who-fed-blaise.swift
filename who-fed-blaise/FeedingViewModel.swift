@@ -118,8 +118,14 @@ class FeedingViewModel: ObservableObject{
     
     @Published var customizeWallPaper: Bool = Parameters.getCustomizeWallPaper()
     @Published var wallPaperImage: Image = Parameters.getWallPaperImage()
-    @Published var wallPaperUIImage: UIImage? = Parameters.getWallPaperUIImage()
+    //@Published var wallPaperUIImage: UIImage? = Parameters.getWallPaperUIImage()
+    @AppStorage(Labels.WALLPAPERMAGNIFYBY) var wallPaperMagnifyBy: Double = 2.5
+    @AppStorage(Labels.WALLPAPEROFFSET) var wallPaperOffsetWidth: Double = 1.5
+    @AppStorage(Labels.WALLPAPEROFFSET) var wallPaperOffsetHeight: Double = 16
     
+    @Published var feedingEnabled: Bool = true
+    @Published var feedingColor: Color = Labels.FEEDING_ENABLED
+
     let decoder: JSONDecoder
     
     init() {
@@ -194,27 +200,19 @@ class FeedingViewModel: ObservableObject{
         return getFeedingRecords()[index]
     }
     
-    /*func getUrlBaseParameters() -> String {
-     var _temp_ = Labels.PETNAME+"="+getPetName()!
-     _temp_ = _temp_+"&"+Labels.ACCOUNT+"="+getAccount()!
-     _temp_ = _temp_+"&"+Labels.FEEDER+"="+getFeeder()
-     _temp_ = _temp_+"&"+Labels.RECORDNUMBER+"="+String(getRecordsNumber())
-     _temp_ = _temp_+"&"+Labels.DEVICETOKEN+"="+Parameters.getDeviceToken()
-     if ( !getLogLevel().elementsEqual(Logger.PARAMETER_DEFAULT) ) {
-     _temp_ = _temp_+"&"+Labels.LOGLEVEL+"="+getLogLevel()
-     }
-     return _temp_
-     }*/
-    
     func add(_ portion: Float) {
-        //let feedingRecord = SqlFeedingRecord()
-        //let parameters=Labels.ACTION_ADD
-        /*parameters=parameters+"?"+getUrlBaseParameters()
-         parameters=parameters+"&"+Labels.PORTION+"="+String(portion)
-         parameters=parameters+"&"+Labels.TIMESTAMP+"="+DateFormatters.mariadbDateFormatter.string(from:feedingRecord.timestamp)*/
-        let httpRequestBody = HttpRequestBody(action: Labels.ACTION_ADD ,feedingViewModel: self,
+        if self.feedingEnabled {
+            let current = Date()
+            logger.debug("Add current time \(current)")
+            guard let last = self.feedingRecords.first?.timestamp  else {return}
+            logger.debug("Last time \(last)")
+            logger.debug("Interval \(current.timeIntervalSince(last))")
+            guard current.timeIntervalSince(last)>60 else {return}
+            self.feedingEnabled = false
+            let httpRequestBody = HttpRequestBody(action: Labels.ACTION_ADD ,feedingViewModel: self,
                                               timestamp: Date(), portion: portion)
-        dataTask(httpBody: httpRequestBody)
+            dataTask(httpBody: httpRequestBody)
+        }
     }
     
     func del(_ feedingRecord: FeedingRecord) {
@@ -321,6 +319,10 @@ class FeedingViewModel: ObservableObject{
             self.feedingRecords = feedingRecords
             self.logger.debug("Dispatched")
             self.requestNotification()
+            guard self.feedingEnabled else {
+                self.feedingEnabled = true
+                return
+            }
             //self.initTimer()
         }
     }
@@ -421,8 +423,32 @@ class FeedingViewModel: ObservableObject{
         return Image(Defaults.WALLPAPERNAME)
     }
     */
+    
+    /*
     func loadWallPaperImage() {
         guard let uiImage = wallPaperUIImage else { return }
         wallPaperImage = Image(uiImage: uiImage)
     }
+    */
 }
+/*
+extension CGSize: RawRepresentable {
+    public init?(rawValue: String) {
+        guard let data = rawValue.data(using: .utf8),
+            let result = try? JSONDecoder().decode(CGSize.self, from: data)
+        else {
+            return nil
+        }
+        self = result
+    }
+
+    public var rawValue: String {
+        guard let data = try? JSONEncoder().encode(self),
+            let result = String(data: data, encoding: .utf8)
+        else {
+            return ""
+        }
+        return result
+    }
+}
+*/

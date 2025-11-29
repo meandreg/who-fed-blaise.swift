@@ -12,9 +12,7 @@ struct FeedingView: View {
     @ObservedObject var feedingViewModel: FeedingViewModel
     
     var body: some View {
-        
         VStack {
-            
             HStack {
                 TextField("Pet Name", text: $feedingViewModel.petName)
                     .padding()
@@ -24,7 +22,6 @@ struct FeedingView: View {
                         feedingViewModel.saveSetting()
                         feedingViewModel.get()
                     }
-                    
                 Label("", systemImage: "arrow.clockwise")
                     .onTapGesture {
                         feedingViewModel.get()
@@ -52,9 +49,10 @@ struct FeedingView: View {
                     }
                     .padding()
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16)
+                        RoundedRectangle(cornerRadius: 16, )
                             .stroke(lineWidth: 4)
                     )
+                    .foregroundColor(feedingViewModel.feedingColor)
                 
                 Text(LocalizedStringKey("half-portion"))
                     .onTapGesture {
@@ -65,6 +63,7 @@ struct FeedingView: View {
                         RoundedRectangle(cornerRadius: 16)
                             .stroke(lineWidth: 4)
                     )
+                    .foregroundColor(feedingViewModel.feedingColor)
             }
             .font(.title3)
             

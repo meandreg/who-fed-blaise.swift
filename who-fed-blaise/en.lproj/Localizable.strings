@@ -21,3 +21,8 @@
 "feeding-board" = "Feeding Board";
 "for-claire" = "For Claire";
 "setting" = "Setting";
+
+"photo-press-long" = "Press 1 second to open photo selector";
+"photo-one-tap" = "Tap once to zoom down";
+"photo-two-taps" = "Tap twice to zoom up";
+"photo-drag" = "Drag image to center";

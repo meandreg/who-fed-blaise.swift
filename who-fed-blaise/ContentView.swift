@@ -12,29 +12,25 @@ struct ContentView: View {
     @ObservedObject var feedingViewModel: FeedingViewModel
 
     @State private var selection = 0
-   /* @State var wallPaperImage: Image = Parameters.getWallPaperImage()
-    @State var wallPaperUIImage: UIImage? = Parameters.getWallPaperUIImage()
-    @State var customizeWallPaper: Bool = Parameters.getCustomizeWallPaper()*/
     
     let logger = Logger(Logger.PARAMETER_DEBUG, category: "ContentView")
     
     var body: some View {
-        
         ZStack {
             TabView (selection: $selection,
-                     content:  {
-                FeedingView(feedingViewModel: feedingViewModel)
-                    .tabItem {
-                        Label(LocalizedStringKey("feeding-board"), systemImage: "list.bullet.rectangle")
-                    }
-                    .tag(0)
-                    .onAppear(perform: {
-                        NotificationManager.notificatioManager.requestNotification()
-                        feedingViewModel.get()
-                    })
-                    .background(
-                        feedingViewModel.wallPaperImage.resizable()
-                    )
+                content:  {
+                    FeedingView(feedingViewModel: feedingViewModel)
+                        .tabItem {
+                            Label(LocalizedStringKey("feeding-board"), systemImage: "list.bullet.rectangle")
+                        }
+                        .tag(0)
+                        .onAppear(perform: {
+                            NotificationManager.notificatioManager.requestNotification()
+                            feedingViewModel.get()
+                        })
+                        .background(
+                            FeedingViewBackgroundView(feedingViewModel: feedingViewModel)
+                        )
                 
                 FeedingViewClaire(feedingViewModel: feedingViewModel)
                     .tabItem {
@@ -46,7 +42,7 @@ struct ContentView: View {
                         feedingViewModel.get()
                     })
                     .background(
-                        feedingViewModel.wallPaperImage.resizable()
+                        FeedingViewBackgroundView(feedingViewModel: feedingViewModel)
                     )
                 
                 SettingView(feedingViewModel: feedingViewModel)
@@ -55,30 +51,29 @@ struct ContentView: View {
                     }
                     .tag(2)
                 
-                WallPaperView(feedingViewModel: feedingViewModel)
-                    .tabItem {
-                        Label("WallPaper", systemImage: "photo")
-                    }
-                    .tag(3)
-                    .background(
-                        feedingViewModel.wallPaperImage.resizable()
-                    )
-                    .onTapGesture(perform: {
-                        feedingViewModel.customizeWallPaper.toggle()
-                    })
+                if #available(iOS 17.0, *) {
+                    WallPaperPhotoPickerView(feedingViewModel: feedingViewModel)
+                        .tabItem {
+                            Label("WallPaper", systemImage: "photo")
+                        }
+                        .tag(3)
+                        .background(
+                            FeedingViewBackgroundView(feedingViewModel: feedingViewModel)
+                        )
+                } else {
+                    WallPaperPHPickerView(feedingViewModel: feedingViewModel)
+                        .tabItem {
+                            Label("WallPaper", systemImage: "photo")
+                        }
+                        .tag(3)
+                        .background(
+                            FeedingViewBackgroundView(feedingViewModel: feedingViewModel)
+                        )
+                }
+                
             })
         }
-        /*.sheet(isPresented: $feedingViewModel.customizeWallPaper) {
-            WallPaperViewController(wallPaperUIImage: $feedingViewModel.wallPaperUIImage)
-        }*/
-        .onChange(of: feedingViewModel.wallPaperUIImage) { _ in feedingViewModel.loadWallPaperImage() }
     }
-    /*
-    func loadImage() {
-        guard let uiImage = feedingViewModel.wallPaperUIImage else { return }
-        feedingViewModel.wallPaperImage = Image(uiImage: uiImage)
-    }
-    */
 }
 
 

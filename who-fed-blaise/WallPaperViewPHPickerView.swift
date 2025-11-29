@@ -11,9 +11,9 @@ import PhotosUI
 
 import SwiftUI
 
-struct WallPaperUIKit: View {
+struct WallPaperPHPickerView: View {
     
-    let logger = Logger(Logger.PARAMETER_DEBUG, category: "WallPaperUIKit")
+    let logger = Logger(Logger.PARAMETER_DEBUG, category: "WallPaperPHPickerView")
     
     @ObservedObject var feedingViewModel: FeedingViewModel
     @State private var showPicker:Bool = false

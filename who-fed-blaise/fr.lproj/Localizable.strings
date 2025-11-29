@@ -21,3 +21,8 @@
 "feeding-board" = "Liste";
 "for-claire" = "Pour Claire";
 "setting" = "Configuration";
+
+"photo-press-long" = "Appuyez 1 seconde ...";
+"photo-one-tap" = "Tapez une fois pour zoomer";
+"photo-two-taps" = "Tapez deux fois pour dé-zoomer";
+"photo-drag" = "Déplacez l'image avec le doigt";
