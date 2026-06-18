@@ -1,28 +1,60 @@
-/* 
-  Localizable.strings
-  who-fed-blaise
-
-  Created by Guillaume Devillers on 15.06.22.
-  
-*/
-"full-portion" = "Full Portion";
-"half-portion" = "Half Portion";
+"account" = "Account";
 "delete" = "Erase";
-
-"feeder" = "feeder";
-"record-number" = "record number";
-"next-feeding-in" = "next feeding in";
-"notification-start" = "notification start";
-"notification-frequency" = "notifcation frequency";
-"hour(s)" = "hours";
-"minute(s)" = "minute(s)";
-"before" = "before";
-
+"feeder" = "Feeder";
 "feeding-board" = "Feeding Board";
 "for-claire" = "For Claire";
-"setting" = "Setting";
+"gender" = "Gender";
+"hostname" = "Hostname";
+"hour(s)" = "hours";
+
+"loglevel" = "Log Level";
+"loglevel-error" = "Error";
+"loglevel-warning" = "Warning";
+"loglevel-info" = "Information";
+"loglevel-debug" = "Debug";
+
+"minute(s)" = "minute(s)";
+
+"next-feeding-in" = "Next feeding in";
+"notification-frequency" = "Notifcation frequency";
+"notification-start" = "Notification start";
+
+"password" = "Password";
+"petname" = "Pet Name";
 
 "photo-press-long" = "Press 1 second to open photo selector";
 "photo-one-tap" = "Tap once to zoom down";
 "photo-two-taps" = "Tap twice to zoom up";
 "photo-drag" = "Drag image to center";
+"photo-color" = "Select a color";
+
+"port" = "Port";
+"portion-full" = "Full Portion";
+"portion-half" = "Half Portion";
+
+"race" = "Race";
+"record-number" = "Record Number";
+"type" = "Type";
+
+"setting" = "Setting";
+
+"minute(s)" = "minute(s)";
+"before" = "before";
+
+"color-black" = "Black";
+"color-blue" = "Blue";
+"color-brown" = "Brown";
+"color-clear" = "Clear";
+"color-cyan" = "Cyan";
+"color-gray" = "Gray";
+"color-green" = "Green";
+"color-indigo" = "Indigo";
+"color-mint" = "Mint";
+"color-orange" = "Orange";
+"color-pink" = "Pink";
+"color-purple" = "Purple";
+"color-red" = "Red";
+"color-teal" = "Teal";
+"color-white" = "White";
+"color-yellow" = "Wellow";
+

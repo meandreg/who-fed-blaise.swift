@@ -8,80 +8,48 @@
 import Foundation
 import os
 
-class Logger {
-    static let PARAMETER_LOGLEVEL="loglevel"
-    static let PARAMETER_DEFAULT="default"
-    static let PARAMETER_ERROR="error"
-    static let PARAMETER_WARNING="warning"
-    static let PARAMETER_INFO="info"
-    static let PARAMETER_DEBUG="debug"
-    static let PARAMETER_ALL="silly"
+class Role {
     
-    static let LEVELS = [Logger.PARAMETER_ERROR,Logger.PARAMETER_WARNING,Logger.PARAMETER_INFO,Logger.PARAMETER_DEBUG,Logger.PARAMETER_ALL]
-    static let LEVEL_DEFAULT:Int=Logger.LEVELS.firstIndex(of: Logger.PARAMETER_ERROR) ?? -1
-    static let LEVEL_ERROR:Int=Logger.LEVELS.firstIndex(of: Logger.PARAMETER_ERROR) ?? -1
-    static let LEVEL_WARNING:Int=Logger.LEVELS.firstIndex(of: Logger.PARAMETER_WARNING) ?? -1
-    static let LEVEL_INFO:Int=Logger.LEVELS.firstIndex(of: Logger.PARAMETER_INFO) ?? -1
-    static let LEVEL_DEBUG:Int=Logger.LEVELS.firstIndex(of: Logger.PARAMETER_DEBUG) ?? -1
-    static let LEVEL_ALL:Int=Logger.LEVELS.firstIndex(of: Logger.PARAMETER_ALL) ?? -1
-
-    var logger:os.Logger
-    var subsystem:String = "WFB"
-    var category:String
-    var level:Int = Logger.LEVEL_ERROR
+    let level: Int
+    let name: String
     
-    init(_ level:String, category:String) {
-        self.category = category
-        logger = os.Logger(subsystem: self.subsystem, category: self.category)
-        self.setLevel(level)
+    init(_ level: Int,_ name: String) {
+        self.level = level
+        self.name = name
     }
-
-    func setLevel(_ level:String) {
-        let index:Int = Logger.LEVELS.firstIndex(of: level) ?? self.level
-        if index != -1 {
-            self.level = index
+    
+    static let ROLE_ROOT="root"
+    static let ROLE_ADMIN="admin"
+    static let ROLE_OWNER="owner"
+    static let ROLE_USER="user"
+    static let ROLE_CHILD="child"
+    static let ROLE_READ="READ"
+    
+    static let ROLE_LEVEL_READ: Int = 0
+    static let ROLE_LEVEL_CHILD: Int = 10
+    static let ROLE_LEVEL_USER: Int = 100
+    static let ROLE_LEVEL_OWNER: Int = 1000
+    static let ROLE_LEVEL_ADMIN: Int = 10000
+    static let ROLE_LEVEL_ROOT: Int =  100000
+    static let ROLE_LEVEL_DEFAULT: Int =  ROLE_LEVEL_READ
+    
+    static let ROLES: [Role] = [Role(ROLE_LEVEL_READ,ROLE_READ),Role(ROLE_LEVEL_CHILD,ROLE_CHILD),Role(ROLE_LEVEL_USER,ROLE_USER),Role(ROLE_LEVEL_OWNER,ROLE_OWNER),Role(ROLE_LEVEL_ADMIN,ROLE_ADMIN),Role(ROLE_LEVEL_ROOT,ROLE_ROOT)]
+        
+    static func getRoleLevel(_ name: String)->Int{
+        for role in ROLES {
+            if role.name == name {
+                return role.level
+            }
         }
-    }
-
-    func format(_ message: String,_ level: Int) -> String {
-        let timestamp = DateFormatters.iso8601DateFormatter.string(from: Date())
-        return "\(timestamp) \(Logger.LEVELS[level]) \(self.subsystem).\(self.category) \(message)"
+        return -1
     }
     
-    func log(_ message:String, _ level:Int) {
-        let message = format(message,level)
-        switch(level) {
-        case Logger.LEVEL_ERROR:
-            self.logger.error("\(message)")
-            break
-        case Logger.LEVEL_WARNING:
-            self.logger.warning("\(message)")
-            break
-        case Logger.LEVEL_INFO:
-            self.logger.info("\(message)")
-            break
-        case Logger.LEVEL_DEBUG, Logger.LEVEL_ALL:
-            self.logger.debug("\(message)")
-            break
-        default:
-            break
+    static func getRoleName(_ level: Int)->String{
+        for role in ROLES {
+            if role.level == level {
+                return role.name
+            }
         }
+        return "unknown"
     }
-
-    func info(_ message:String) {
-        if self.level>=Logger.LEVEL_INFO {self.log(message,Logger.LEVEL_INFO) }
-    }
-
-    func warn(_ message:String) {
-        if self.level>=Logger.LEVEL_WARNING { self.log(message,Logger.LEVEL_WARNING) }
-    }
-
-    func error(_ message:String) {
-        if self.level>=Logger.LEVEL_ERROR { self.log(message,Logger.LEVEL_WARNING) }
-    }
-
-    func debug(_ message:String) {
-        if self.level>=Logger.LEVEL_DEBUG { self.log(message,Logger.LEVEL_DEBUG) }
-    }
-
 }

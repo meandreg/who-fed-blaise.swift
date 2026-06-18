@@ -13,15 +13,15 @@ import SwiftUI
 
 struct WallPaperPHPickerView: View {
     
-    let logger = Logger(Logger.PARAMETER_DEBUG, category: "WallPaperPHPickerView")
+    let logger = Logger(category: "WallPaperPHPickerView")
     
-    @ObservedObject var feedingViewModel: FeedingViewModel
+    @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
     @State private var showPicker:Bool = false
     @State private var pickedImage:UIImage? = nil
     @State private var imagePicked: Bool = false
     
     var body: some View {
-        WallPaperView(feedingViewModel: feedingViewModel,showPicker: $showPicker)
+        WallPaperView(whoFedBlaiseViewModel: whoFedBlaiseViewModel, showPicker: $showPicker)
         .sheet(isPresented: $showPicker, content: {
             WallPaperViewControllerRepresentable(showPicker: $showPicker, imagePicked: $imagePicked, pickedImage: $pickedImage)
         })
@@ -34,8 +34,8 @@ struct WallPaperPHPickerView: View {
                         return
                 }
                 logger.debug("New wallpaper image selected: \(imagePicked)")
-                Parameters.setWallPaperUIImage(newImage)
-                feedingViewModel.wallPaperImage = Parameters.getWallPaperImage()
+            WhoFedBlaiseDefaults.saveWallpaperUIImage(whoFedBlaiseViewModel, uiImage: newImage)
+            //feedingViewModel.setWallpaperUIImage(uiImage: newImage)
         }
     }
 }

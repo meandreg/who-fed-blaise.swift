@@ -11,7 +11,7 @@ import UserNotifications
 
 class NotificationManager {
     
-    let logger = Logger(Logger.PARAMETER_INFO, category: "NotificationManager")
+    let logger = Logger(category: "FeedingNotification")
     
     static let notificatioManager = NotificationManager()
     

@@ -7,15 +7,18 @@
 import Foundation
 import SwiftUI
 
-struct WhoFedBlaiseParameters: Encodable, Decodable {
+struct JsonPetParameters: Encodable, Decodable {
 
     var id: UUID
-    var logLevel: String
+    var logLevel: Int
     var hostname: String
     var port: String
     var account: String
     var feeder: String
+    var role: Int
     var name: String
+    var type: String
+    var race: String
     var recordNumber: Float
     var feedingNext: Float
     var notifyBefore: Float
@@ -23,29 +26,51 @@ struct WhoFedBlaiseParameters: Encodable, Decodable {
     var wallpaperMagnifyBy: Double
     var wallpaperOffsetWidth: Double
     var wallpaperOffsetHeight: Double
-    var feedingRecords: [jsonFeedingRecord] = []
+    
+    var fontsizePetName: CGFloat
+    var fontsizePetAccount: CGFloat
+    var fontsizeTimestamp: CGFloat
+    var fontsizeFeeder: CGFloat
+    var fontsizeFooter: CGFloat
+    
+    var foregroundColor: Int
+    var backgroundColor: Int
+    
+    var feedingRecords: [JsonFeedingRecord] = []
     
     init(_ from: WhoFedBlaiseViewModel) throws {
-        do {
-            self.id = try from.getId()
-            self.name = try from.getName()
-            self.feeder = try from.getFeeder()
-            self.account = try from.getAccount()
-        } catch {
-            throw error
-        }
+        self.id = from.id
+        self.name = from.name
+        self.type = from.type
+        self.race = from.race
+        self.feeder = from.feeder
+        self.account = from.account
         self.hostname = from.hostname
         self.port = from.port
+        self.role = from.role
         self.recordNumber = from.recordNumber
         self.logLevel = from.logLevel
         self.feedingNext = from.feedingNext
         self.notifyBefore = from.notifyBefore
         self.notifyEvery = from.notifyEvery
+        
         self.wallpaperMagnifyBy = from.wallpaperMagnifyBy
         self.wallpaperOffsetWidth = from.wallpaperOffsetWidth
         self.wallpaperOffsetHeight = from.wallpaperOffsetHeight
-        self.feedingRecords = from.feedingRecords
         self.recordNumber = from.recordNumber
+        
+        self.fontsizePetName = from.fontsizePetName
+        self.fontsizePetAccount = from.fontsizePetAccount
+        self.fontsizeTimestamp = from.fontsizeTimestamp
+        self.fontsizeFeeder = from.fontsizeFeeder
+        self.fontsizeFooter = from.fontsizeFeeder
+        
+        self.foregroundColor = from.foregroundColor
+        self.backgroundColor = from.backgroundColor
+        
+        for feedingRecord in from.feedingRecords {
+            self.feedingRecords.append(JsonFeedingRecord(from: feedingRecord))
+        }
     }
     
     enum CodingKeys : String, CodingKey {
@@ -53,8 +78,11 @@ struct WhoFedBlaiseParameters: Encodable, Decodable {
         case account
         case hostname
         case port
-        case name = "name"
+        case name
+        case type
+        case race
         case feeder
+        case role
         case recordNumber = "recordnumber"
         case logLevel = "loglevel"
         case feedingNext = "feedingnext"
@@ -64,10 +92,17 @@ struct WhoFedBlaiseParameters: Encodable, Decodable {
         case wallpaperOffsetHeight = "wallpaperoffsetheight"
         case wallpaperOffsetWidth = "wallpaperoffsetwidth"
         case feedingRecords = "feedingrecords"
+        case fontsizePetName = "fontsizepetname"
+        case fontsizePetAccount = "fontsizepetaccount"
+        case fontsizeTimestamp = "fontsizetimestamp"
+        case fontsizeFeeder = "fontsizefeeder"
+        case fontsizeFooter = "fontsizefooter"
+        case foregroundColor = "foregroundcolor"
+        case backgroundColor = "backgroundcolor"
     }
 }
 
-class WhoFeFeedingRecord {
+class JsonFeedingRecord: Encodable, Decodable {
     var timestamp: Date
     var portion: Double
     var feeder: String
@@ -80,5 +115,13 @@ class WhoFeFeedingRecord {
         self.feeder = feeder
         self.alias = alias
         self.name = name
+    }
+    
+    init(from: FeedingRecord) {
+        self.timestamp = from.timestamp
+        self.portion = from.portion
+        self.feeder = from.feeder
+        self.alias = from.alias
+        self.name = from.name
     }
 }

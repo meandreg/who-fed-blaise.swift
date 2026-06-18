@@ -7,119 +7,78 @@
 
 import SwiftUI
 
-struct FeedingView: View {
+struct FeedingViewFooter: View {
     
-    let logger = Logger(category: "FeedingView")
-
+    let logger = Logger(category: "FeedingViewFooter")
+    
+    static let portionSize:CGSize = if #available(iOS 17, *) {
+        CGSize(width:1.5,height:1.5)
+    } else {
+        CGSize(width:1.5,height:1.0)
+    }
+    
     @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
     
-    @State private var offset = CGSize.zero
-    
     var body: some View {
-            VStack {
-                HStack {
-                    VStack {
-                        Label("", systemImage: "gearshape")
-                            .onTapGesture {
-                                whoFedBlaiseViewModel.selectedPetConfig = true
-                            }
-                        Label("", systemImage: "photo")
-                            .onTapGesture {
-                                whoFedBlaiseViewModel.selectedPetPhoto = true
-                            }
-                        Label("", systemImage: "textformat.size")
-                            .gesture(
-                                TapGesture(count: 2).onEnded({
-                                    whoFedBlaiseViewModel.fontsize(increase: true)
-                                }).exclusively(before: TapGesture(count: 1).onEnded({
-                                    whoFedBlaiseViewModel.fontsize(increase: false)
-                                }))
-                            )
-                    }
-                    Spacer()
-                    PetNameView(whoFedBlaiseViewModel: whoFedBlaiseViewModel)
-                    Spacer()
-                    if whoFedBlaiseViewModel.selectedPetPicker {
-                        Label("", systemImage: "checkmark.circle")
-                        .onTapGesture {
-                            whoFedBlaiseViewModel.selectedPetPicker = false
-                        }
-                    } else {
-                        if whoFedBlaiseViewModel.selectedPets.isMultiple() {
-                            Label("", systemImage: "checklist")
-                            .onTapGesture {
-                                whoFedBlaiseViewModel.selectedPetPicker = true
-                            }
-                        }
-                    }
+        HStack() {
+            Spacer()
+            Label("", systemImage: "textformat.size")
+                //.scaleEffect(FeedingViewFooter.portionSize)
+                //.padding(4)
+                .gesture(
+                    TapGesture(count: 2).onEnded({
+                        whoFedBlaiseViewModel.fontsizeRecord(increase: true)
+                    }).exclusively(before: TapGesture(count: 1).onEnded({
+                        whoFedBlaiseViewModel.fontsizeRecord(increase: false)
+                    }))
+                )
+            Spacer()
+            Label("100%", systemImage: WhoFedBlaiseViewModel.portionFull)
+                //.scaleEffect(FeedingViewFooter.portionSize)
+                .onTapGesture {
+                    whoFedBlaiseViewModel.addFeedingRecord(portion: 1)
                 }
-                //.font(.title2)
-                
-                //Rectangle()
-                //    .frame(maxHeight: .infinity)
-                //    .opacity(0.001)
-                HStack {
-                    /*Spacer()
-                    Label("", systemImage: "textformat.size")
-                        .gesture(
-                            TapGesture(count: 2).onEnded({
-                                whoFedBlaiseViewModel.fontsize(increase: true)
-                            }).exclusively(before: TapGesture(count: 1).onEnded({
-                                whoFedBlaiseViewModel.fontsize(increase: false)
-                            }))
-                        )
-                        .scaleEffect(1.5)*/
-                    Spacer()
-                    Label("", systemImage: "battery.100percent")
+                //.padding(4)
+                //.foregroundColor(whoFedBlaiseViewModel.feedingColor)
+                //.labelStyle(GradientBorderedLabelStyle())
+                //Text("100%")
+            Spacer()
+            Label("50%", systemImage: WhoFedBlaiseViewModel.portionHalf)
+                //.scaleEffect(FeedingViewFooter.portionSize)
+                .onTapGesture {
+                    whoFedBlaiseViewModel.addFeedingRecord(portion: 0.5)
+                }
+                //.foregroundColor(whoFedBlaiseViewModel.feedingColor)
+                //.padding(4)
+                //.border(Color.black, width: 4)
+                //Text("50%")
+                Spacer()
+                if ((Int(whoFedBlaiseViewModel.recordNumber)<=1 || whoFedBlaiseViewModel.feedingRecords.count==1)
+                && (whoFedBlaiseViewModel.role<Role.ROLE_LEVEL_USER || whoFedBlaiseViewModel.feedingRecords[0].alias==whoFedBlaiseViewModel.alias)) {
+                    Label("", systemImage: "trash")
                         .onTapGesture {
-                            whoFedBlaiseViewModel.addFeedingRecord(portion: 1)
+                            whoFedBlaiseViewModel.delFeedingRecord(feedingRecord: whoFedBlaiseViewModel.feedingRecords[0])
                         }
                         .foregroundColor(whoFedBlaiseViewModel.feedingColor)
-                        .scaleEffect(2.0)
+                        .scaleEffect(1.5)
                     Spacer()
-                    Label("", systemImage: "battery.50percent")
-                        .onTapGesture {
-                            whoFedBlaiseViewModel.addFeedingRecord(portion: 0.5)
-                        }
-                        .foregroundColor(whoFedBlaiseViewModel.feedingColor)
-                        .scaleEffect(2.0)
-                    Spacer()
-                    if (Int(whoFedBlaiseViewModel.recordNumber)<=1 || whoFedBlaiseViewModel.role<Role.ROLE_LEVEL_USER) && whoFedBlaiseViewModel.feedingRecords.count==1 {
-                        if whoFedBlaiseViewModel.feedingRecords[0].alias==whoFedBlaiseViewModel.alias {
-                            Label("", systemImage: "trash")
-                                .onTapGesture {
-                                    whoFedBlaiseViewModel.delFeedingRecord(feedingRecord: whoFedBlaiseViewModel.feedingRecords[0])
-                                }
-                                .foregroundColor(whoFedBlaiseViewModel.feedingColor)
-                                .scaleEffect(1.5)
-                        }
-                        Spacer()
-                    }
                 }
-                
-                /*Spacer()
-                
-                if Int(whoFedBlaiseViewModel.recordNumber)<=1 || whoFedBlaiseViewModel.role<Role.ROLE_LEVEL_USER || whoFedBlaiseViewModel.feedingRecords.count<=1 {
-                    if whoFedBlaiseViewModel.feedingRecords.count>=1 {
-                        RecordView(whoFedBlaiseViewModel: whoFedBlaiseViewModel, feedingRecord: whoFedBlaiseViewModel.feedingRecords[0])
-                    }
-                } else {
-                    List {
-                        ForEach(whoFedBlaiseViewModel.feedingRecords, id: \.timestamp, content: { feedingRecord in
-                            RecordView(whoFedBlaiseViewModel: whoFedBlaiseViewModel, feedingRecord: feedingRecord)
-                        })
-                    }
-                    .listStyle(.plain)
-                    .opacity(0.5)
-                }
-                */
-                
-                
-                //Rectangle()
-                //    .frame(maxHeight: 10)
-                //    .opacity(0.001)
             }
+            //.scaleEffect(FeedingViewFooter.portionSize)
+            //.padding(4)
+            //.font(.system(size: whoFedBlaiseViewModel.fontsizeFooter))
         }
+    }
+
+
+struct GradientBorderedLabelStyle: LabelStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        Label(configuration)
+            .padding(5)
+            .border(
+                Color.black,
+                width: 2
+            )
+            .cornerRadius(10)
+    }
 }
-
-

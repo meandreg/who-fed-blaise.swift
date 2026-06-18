@@ -9,61 +9,137 @@ import SwiftUI
 
 struct SettingView: View {
     
-    @ObservedObject var feedingViewModel: FeedingViewModel
+    @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
     
-    private let logLevels = [Logger.PARAMETER_DEFAULT,Logger.PARAMETER_ERROR,Logger.PARAMETER_WARNING,Logger.PARAMETER_INFO,Logger.PARAMETER_DEBUG]
+    //var feederAccounts: [String] = ["clairedufour@free.fr","guillaume@meandre.eu","blaiselechat@gmail.com"]
+    //private let logLevels = [Logger.PARAMETER_DEFAULT,Logger.PARAMETER_ERROR,Logger.PARAMETER_WARNING,Logger.PARAMETER_INFO,Logger.PARAMETER_DEBUG]
     
     var body: some View {
         
-        List {
-            LabeledTextField(label: Labels.ACCOUNT, value: $feedingViewModel.account)
-            FeederPasswordTextFields(feeder: $feedingViewModel.feeder, password: $feedingViewModel.password)
-            LabeledTextField(label: Labels.URL.uppercased(), value: $feedingViewModel.url)
+        VStack {
+            HStack {
+                Label("", systemImage: "pawprint")
+                    .onTapGesture {
+                        WhoFedBlaiseDefaults.save(whoFedBlaiseViewModel)
+                        whoFedBlaiseViewModel.selectedPetConfig = false
+                    }
+                if !whoFedBlaiseViewModel.feederPets.isEmpty {
+                    Spacer()
+                    Label("", systemImage: "plus.square.on.square")
+                        .onTapGesture {
+                            whoFedBlaiseViewModel.addFeederPet()
+                        }
+                    if whoFedBlaiseViewModel.selectedPets.isMultiple {
+                        Label("", systemImage: "pip.remove")
+                            .onTapGesture {
+                                whoFedBlaiseViewModel.removeCurrentPet()
+                                whoFedBlaiseViewModel.selectedPetConfig = false
+                            }
+                    }
+                }
+            }
             
-            SliderText(min: 1, max: 10,
-                       label1: "record-number",
-                       label2: "",
-                       variable: $feedingViewModel.recordNumber,
-                       modulo:  1
-            )
-            
-            SliderText(min: 60, max: 24*60,
-                       label1: "next-feeding-in",
-                       label2: "hours(s)",
-                       variable: $feedingViewModel.feedingNext,
-                       modulo:  60
-            )
-            
-            SliderText(min: 1, max: 60,
-                       label1: "notification-start",
-                       label2: "minute(s)",
-                       variable: $feedingViewModel.notificationBefore,
-                       modulo:  1
-            )
-            
-            SliderText(min: 1, max: 60,
-                       label1: "notification-frequency",
-                       label2: "minute(s)",
-                       variable: $feedingViewModel.notificationEvery,
-                       modulo:  1
-            )
-            
-            Picker("Log Level",
-                   selection: $feedingViewModel.logLevel,
-                   content: {
-                ForEach(logLevels, id: \.self) {Text($0)}
-            })
-            .pickerStyle(.menu)
-            .onChange(of: feedingViewModel.logLevel) { newLogLevel in
-                feedingViewModel.logger.setLevel(newLogLevel)
+            List {
+                HStack {
+                    LabeledTextField(label: "Hostname", value: $whoFedBlaiseViewModel.hostname)
+                        .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
+                    LabeledTextField(label: "port", value: $whoFedBlaiseViewModel.port)
+                }
+                
+                LabeledTextField(label: "feeder", value: $whoFedBlaiseViewModel.feeder)
+                    .onAppear() {
+                        whoFedBlaiseViewModel.getFeederPets()
+                    }
+                    .onSubmit {
+                        whoFedBlaiseViewModel.getFeederPets()
+                    }
+
+                /*FeederPasswordTextFields(feeder: $whoFedBlaiseViewModel.feeder, password: $whoFedBlaiseViewModel.password)
+                    .onAppear() {
+                        whoFedBlaiseViewModel.getFeederPets()
+                    }
+                    .onSubmit {
+                        whoFedBlaiseViewModel.getFeederPets()
+                    }
+                    .onChange(of: whoFedBlaiseViewModel.feeder) { newValue in
+                        whoFedBlaiseViewModel.getFeederPets()
+                    }
+                */
+                
+                Picker(LocalizedStringKey(Labels.PETNAME),
+                    selection: $whoFedBlaiseViewModel.id,
+                    content: {
+                        ForEach(whoFedBlaiseViewModel.feederPets.pets) {pet in
+                            if whoFedBlaiseViewModel.selectedPets.exists(pet.id) {
+                                Label(pet.name+"\n(@) "+pet.account, systemImage: "checkmark")
+                                    .tag(pet.id)
+                                    .font(.callout)
+                            } else {
+                                Text(pet.name+"\n(@) "+pet.account)
+                                    .tag(pet.id)
+                            }
+                        }
+                    }
+                )
+                .pickerStyle(.menu)
+                .onChange(of: whoFedBlaiseViewModel.id, perform: { newId in
+                    if !whoFedBlaiseViewModel.selectedPets.exists(newId) {
+                        whoFedBlaiseViewModel.swapTo(newId)
+                    }
+                })
+                
+                SliderText(min: 1, max: 10,
+                           label1: LocalizedStringKey(Labels.RECORDNUMBER),
+                           label2: "",
+                           variable: $whoFedBlaiseViewModel.recordNumber,
+                           modulo:  1
+                )
+                
+                SliderText(min: 60, max: 24*60,
+                           label1: LocalizedStringKey(Labels.FEEDINGNEXT),
+                           label2: LocalizedStringKey("hours(s)"),
+                           variable: $whoFedBlaiseViewModel.feedingNext,
+                           modulo:  60
+                )
+                
+                SliderText(min: 1, max: 60,
+                           label1: LocalizedStringKey(Labels.NOTIFYBEFORE),
+                           label2: LocalizedStringKey("minute(s)"),
+                           variable: $whoFedBlaiseViewModel.notifyBefore,
+                           modulo:  1
+                )
+                
+                SliderText(min: 1, max: 60,
+                           label1: LocalizedStringKey(Labels.NOTIFEVERY),
+                           label2: LocalizedStringKey("minute(s)"),
+                           variable: $whoFedBlaiseViewModel.notifyEvery,
+                           modulo:  1
+                )
+                
+                Picker(LocalizedStringKey(Labels.LOGLEVEL),
+                    selection: $whoFedBlaiseViewModel.logLevel,
+                    content: {
+                        ForEach(Logger.LABELS, id: \.self) {
+                                Text($0)
+                                .tag(Logger.getLevel($0))
+                            }
+                        }
+                )
+                .pickerStyle(.menu)
+                .onChange(of: whoFedBlaiseViewModel.logLevel) { newLogLevel in
+                    whoFedBlaiseViewModel.setLogLevel(newLogLevel)
+                }
             }
         }
-        .onDisappear() {
-            feedingViewModel.saveSetting()
-        }
+        //.background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
         .listStyle(.plain)
+        .opacity(0.8)
+        //.backgroundColor(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
+        /*.listStyle(.plain)
         .font(.title3)
-
+        .onAppear(perform: {
+            //whoFedBlaiseViewModel.savePet()
+        })*/
     }
 }
 
@@ -99,7 +175,7 @@ struct LabeledTextField :View{
     
     var body: some View {
         VStack (alignment: .leading, spacing: 0) {
-            Text("**\(label)**")
+            Text(LocalizedStringKey(label))
                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
             TextField(label, text: $value)
                 .autocapitalization(.none)
@@ -118,7 +194,7 @@ struct FeederPasswordTextFields :View {
     var body: some View {
         VStack (alignment: .leading, spacing: 0){
             LabeledTextField(label: Labels.FEEDER, value: $feeder)
-            Text("**\(Labels.PASSWORD)**")
+            Text(LocalizedStringKey(Labels.PASSWORD))
                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
             SecureField(Labels.PASSWORD, text: $password)
                 .padding(EdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5))

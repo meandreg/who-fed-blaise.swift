@@ -5,15 +5,29 @@
   Created by Guillaume Devillers on 15.06.22.
   
 */
+"loglevel" = "Niveau de log";
+"loglevel-error" = "Erreur";
+"loglevel-warning" = "Avertissement";
+"loglevel-info" = "Information";
+"loglevel-debug" = "Débogage";
+
 "full-portion" = "Portion Complete";
 "half-portion" = "Demi Portion";
 "delete" = "Supprimer";
 
-"feeder" = "soigneur";
-"record-number" = "nombre d'enregistrement";
-"next-feeding-in" = "prochain repas dans";
-"notification-start" = "lancement des notifications";
-"notification-frequency" = "fréquence de notification";
+"hostname" = "Hostname";
+"port" = "Port";
+"account" = "Compte";
+"petname" = "Animal";
+"type" = "Type";
+"race" = "Race";
+"gender" = "Genre";
+"feeder" = "Soigneur";
+"password" = "Mot de passe";
+"record-number" = "Nombre d'enregistrement";
+"next-feeding-in" = "Prochain repas dans";
+"notification-start" = "Lancement des notifications";
+"notification-frequency" = "Fréquence de notification";
 "hour(s)" = "heure(s)";
 "minute(s)" = "minute(s)";
 "before" = "avant";
@@ -26,3 +40,22 @@
 "photo-one-tap" = "Tapez une fois pour zoomer";
 "photo-two-taps" = "Tapez deux fois pour dé-zoomer";
 "photo-drag" = "Déplacez l'image avec le doigt";
+"photo-color" = "Selecteur de couleur";
+
+"color-black" = "Noir";
+"color-blue" = "Bleu";
+"color-brown" = "Brun";
+"color-clear" = "Clair";
+"color-cyan" = "Cyan";
+"color-gray" = "Gris";
+"color-green" = "Vert";
+"color-indigo" = "Indigo";
+"color-mint" = "Menthe";
+"color-orange" = "Orange";
+"color-pink" = "Rose";
+"color-purple" = "Pourpre";
+"color-red" = "Rouge";
+"color-teal" = "Turquoise";
+"color-white" = "Blanc";
+"color-yellow" = "Jaune";
+

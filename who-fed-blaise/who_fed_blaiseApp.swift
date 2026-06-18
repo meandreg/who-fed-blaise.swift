@@ -11,15 +11,16 @@ import SwiftUI
 struct who_fed_blaiseApp: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
-    @StateObject var feedingViewModel = FeedingViewModel()
+    //@EnvironmentObject private var appDelegate: MyAppDelegate
+    //@EnvironmentObject private var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
+    
+    @StateObject var whoFedBlaiseViewModel = WhoFedBlaiseViewModel()
 
     @Environment(\.scenePhase) var scenePhase
     
     var body: some Scene {
         WindowGroup {
-            //NotificationRequestView()
-            ContentView(feedingViewModel: feedingViewModel)
+            ContentView(whoFedBlaiseViewModel: whoFedBlaiseViewModel)
                 .onChange(of: scenePhase) { newPhase in
                     if newPhase == .active {
                         UIApplication.shared.applicationIconBadgeNumber = 0

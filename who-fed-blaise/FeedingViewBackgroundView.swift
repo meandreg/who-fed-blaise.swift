@@ -10,13 +10,13 @@ import PhotosUI
 
 struct FeedingViewBackgroundView: View {
     
-    let logger = Logger(Logger.PARAMETER_DEBUG, category: "FeedingViewBacgroundView")
+    let logger = Logger(category: "FeedingViewBacgroundView")
     
-    @ObservedObject var feedingViewModel: FeedingViewModel
+    @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
     
     var body: some View {
-        feedingViewModel.wallPaperImage
-            .scaleEffect(CGSize(width: feedingViewModel.wallPaperMagnifyBy,height: feedingViewModel.wallPaperMagnifyBy))
-            .offset(CGSize(width: feedingViewModel.wallPaperOffsetWidth,height: feedingViewModel.wallPaperOffsetHeight))
+        whoFedBlaiseViewModel.wallpaperImage
+            .scaleEffect(CGSize(width: whoFedBlaiseViewModel.wallpaperMagnifyBy,height: whoFedBlaiseViewModel.wallpaperMagnifyBy))
+            .offset(CGSize(width: whoFedBlaiseViewModel.wallpaperOffsetWidth,height: whoFedBlaiseViewModel.wallpaperOffsetHeight))
     }
 }

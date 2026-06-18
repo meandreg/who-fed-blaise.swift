@@ -6,20 +6,12 @@
 //
 import Foundation
 
-enum WhoFedBlaiseErrors: Error {
-    case propertyIsMissing(String)
-    case forKeyDoesNotExist(String)
-    case imageDoesNotExist(String)
+enum PetArrayErrors: Error {
     case failedToConvertToData(String)
-    case failedToEncode(Encodable)
-    case unknownPet(String)
-    case alreadyPartOfPetList(String)
-    case alreadySelectedPet(String)
-    case isDefaultPet
+    case failedToEncode(String)
+    case unlistedPet(String)
     case isNotMultiple
     case indexOutofRange(String)
     case emptyPetList(String)
-    case notInSelectedPets(String)
-    case notInFeederPets(String)
-    case notInPetList(String)
+    case duplicatePetId(String)
 }

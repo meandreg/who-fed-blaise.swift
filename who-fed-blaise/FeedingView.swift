@@ -9,65 +9,39 @@ import SwiftUI
 
 struct FeedingView: View {
     
-    @ObservedObject var feedingViewModel: FeedingViewModel
+    let logger = Logger(category: "FeedingView")
+
+    @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
+    
+    @State private var offset = CGSize.zero
     
     var body: some View {
         VStack {
-            HStack {
-                TextField("Pet Name", text: $feedingViewModel.petName)
-                    .padding()
-                    .autocorrectionDisabled()
-                    .textInputAutocapitalization(.never)
-                    .onSubmit {
-                        feedingViewModel.saveSetting()
-                        feedingViewModel.get()
-                    }
-                Label("", systemImage: "arrow.clockwise")
-                    .onTapGesture {
-                        feedingViewModel.get()
-                    }
-            }
-            .font(.largeTitle)
-            
-            Rectangle()
+            FeedingViewHeader(whoFedBlaiseViewModel: whoFedBlaiseViewModel)
+            /*Rectangle()
                 .frame(maxHeight: .infinity)
-                .opacity(0)
-            
-            List {
-                ForEach(feedingViewModel.getFeedingRecords(), id: \.timestamp, content: { feedingRecord in
-                    RecordView(feedingViewModel: feedingViewModel, feedingRecord: feedingRecord)
-                })
+                .opacity(0.001)*/
+            Spacer()
+            if Int(whoFedBlaiseViewModel.recordNumber)<=1 || whoFedBlaiseViewModel.role<Role.ROLE_LEVEL_USER || whoFedBlaiseViewModel.feedingRecords.count<=1 {
+                if whoFedBlaiseViewModel.feedingRecords.count>=1 {
+                    RecordView(whoFedBlaiseViewModel: whoFedBlaiseViewModel, feedingRecord: whoFedBlaiseViewModel.feedingRecords[0])
+                }
+            } else {
+                List {
+                    ForEach(whoFedBlaiseViewModel.feedingRecords, id: \.timestamp, content: { feedingRecord in
+                        RecordView(whoFedBlaiseViewModel: whoFedBlaiseViewModel, feedingRecord: feedingRecord)
+                    })
+                }
+                .listStyle(.plain)
+                .opacity(0.5)
+                .frame(maxHeight: UIScreen.main.bounds.height * 0.3)
             }
-            .listStyle(.plain)
-            .opacity(0.5)
-            
-            
-            HStack {
-                Text(LocalizedStringKey("full-portion"))
-                    .onTapGesture {
-                        feedingViewModel.add(1)
-                    }
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16, )
-                            .stroke(lineWidth: 4)
-                    )
-                    .foregroundColor(feedingViewModel.feedingColor)
-                
-                Text(LocalizedStringKey("half-portion"))
-                    .onTapGesture {
-                        feedingViewModel.add(0.5)
-                    }
-                    .padding()
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .stroke(lineWidth: 4)
-                    )
-                    .foregroundColor(feedingViewModel.feedingColor)
-            }
-            .font(.title3)
-            
+            FeedingViewFooter(whoFedBlaiseViewModel: whoFedBlaiseViewModel)
+            Rectangle()
+                .frame(maxHeight: 5)
+                .opacity(0.001)
         }
+        .font(.system(size: whoFedBlaiseViewModel.fontsizeFooter))
     }
 }
 

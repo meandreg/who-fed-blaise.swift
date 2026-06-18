@@ -10,53 +10,114 @@ import PhotosUI
 
 struct WallPaperView: View {
     
-    let logger = Logger(Logger.PARAMETER_DEBUG, category: "WallPaperView")
+    let logger = Logger(category: "WallPaperView")
     
-    @ObservedObject var feedingViewModel: FeedingViewModel
+    @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
     @Binding var showPicker: Bool
-
+    @State private var selectedColor: Color = .black
+    @State private var showdColorPicker: Bool = false
+    
     @State private var offset = CGSize.zero
+    @State private var showColorPicker: Bool = true
     
     var body: some View {
-        HStack() {
-            VStack(alignment: .leading) {
-                Label(LocalizedStringKey("photo-press-long"),systemImage: "pointer.arrow.click.badge.clock")
-                Label(LocalizedStringKey("photo-one-tap"), systemImage: "pointer.arrow.click")
-                Label(LocalizedStringKey("photo-two-taps"), systemImage: "pointer.arrow.click.2")
-                Label(LocalizedStringKey("photo-drag"), systemImage: "hand.draw")
-            }
+        VStack {
+            Label("", systemImage: "pawprint")
+                .onTapGesture {
+                    WhoFedBlaiseDefaults.save(whoFedBlaiseViewModel)
+                    whoFedBlaiseViewModel.selectedPetPhoto = false
+                }
+            Spacer()
             VStack() {
-                Label("",systemImage: "photo")
-                Label("", systemImage: "minus.magnifyingglass")
-                Label("", systemImage: "plus.magnifyingglass")
-                Label("", systemImage: "pointer.arrow.and.square.on.square.dashed")
+                HStack() {
+                    Label(LocalizedStringKey("photo-press-long"),systemImage: "pointer.arrow.click.badge.clock")
+                    Spacer()
+                    Label("",systemImage: "photo")
+                }
+                .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
+                HStack() {
+                    Label(LocalizedStringKey("photo-one-tap"), systemImage: "pointer.arrow.click")
+                    Spacer()
+                    Label("", systemImage: "minus.magnifyingglass")
+                }
+                .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
+                HStack() {
+                    Label(LocalizedStringKey("photo-two-taps"), systemImage: "pointer.arrow.click.2")
+                    Spacer()
+                    Label("", systemImage: "plus.magnifyingglass")
+                }
+                .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
+                HStack() {
+                    Label(LocalizedStringKey("photo-drag"), systemImage: "hand.draw")
+                    Spacer()
+                    Label("", systemImage: "pointer.arrow.and.square.on.square.dashed")
+                }
+                .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
             }
-        }.padding(10)
-        .overlay(
+            .gesture(
+                DragGesture().onChanged{
+                    gesture in offset = gesture.translation
+                    whoFedBlaiseViewModel.wallpaperOffsetWidth = offset.width
+                    whoFedBlaiseViewModel.wallpaperOffsetHeight = offset.height
+                }
+            )
+            .gesture(
+                TapGesture(count: 2)
+                .onEnded({
+                    whoFedBlaiseViewModel.wallpaperMagnifyBy = whoFedBlaiseViewModel.wallpaperMagnifyBy*1.2
+                    logger.debug("Two (2) taps \(whoFedBlaiseViewModel.wallpaperMagnifyBy)")
+                })
+                .exclusively(before: TapGesture(count: 1)
+                    .onEnded({
+                        whoFedBlaiseViewModel.wallpaperMagnifyBy = whoFedBlaiseViewModel.wallpaperMagnifyBy/1.2
+                            logger.debug("One (1) taps \(whoFedBlaiseViewModel.wallpaperMagnifyBy)")
+                    })
+                )
+            )
+            .onLongPressGesture(perform: {
+                showPicker=true
+                logger.debug("Show picker is \(showPicker)")
+            })
+        
+            HStack() {
+                Text(LocalizedStringKey("photo-color"))
+                Spacer()
+                //Label("", systemImage: "pointer.arrow.and.square.on.square.dashed")
+                Picker("ColorPicker", selection: $whoFedBlaiseViewModel.foregroundColor,
+                       content: {
+                    ForEach(Array(Defaults.COLORNAMES.enumerated()), id: \.offset) {index , element in
+                        Text(element)
+                            .tag(index)
+                            .foregroundStyle(Defaults.COLORS[index])
+                    }
+                }
+                )
+                .pickerStyle(.menu)
+            }
+            .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
+            HStack() {
+                Text(LocalizedStringKey("photo-background"))
+                Spacer()
+                Picker("ColorPicker", selection: $whoFedBlaiseViewModel.backgroundColor,
+                       content: {
+                    ForEach(Array(Defaults.COLORNAMES.enumerated()), id: \.offset) {index , element in
+                        Text(element)
+                            .tag(index)
+                            .foregroundStyle(Defaults.COLORS[index])
+                    }
+                }
+                )
+                .pickerStyle(.menu)
+            }
+            .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
+            Spacer()
+        }
+        .padding(10)
+        /*.overlay(
             RoundedRectangle(cornerRadius: 16)
                 .stroke(lineWidth: 4)
-                .opacity(0.5)
-        )
-        .background(
-            Color.gray.opacity(0.5)
-        )
-        .gesture(
-            DragGesture().onChanged{
-                gesture in offset = gesture.translation
-                feedingViewModel.wallPaperOffsetWidth = offset.width
-                feedingViewModel.wallPaperOffsetHeight = offset.height
-            }
-        )
-        .gesture(
-            TapGesture(count: 2).onEnded({
-                feedingViewModel.wallPaperMagnifyBy = feedingViewModel.wallPaperMagnifyBy/1.2
-            }).exclusively(before: TapGesture(count: 1).onEnded({
-                feedingViewModel.wallPaperMagnifyBy = feedingViewModel.wallPaperMagnifyBy*1.2
-            }))
-        )
-        .onLongPressGesture(perform: {
-            showPicker=true
-            logger.debug("Show picker is \(showPicker)")
-        })
+                .opacity(0.1)
+        )*/
+        .background(Color.gray.opacity(0.2))
     }
 }

@@ -4,16 +4,16 @@
 //
 //  Created by Guillaume Devillers on 07.10.24.
 //
-
+/*
 import Foundation
 import os
 import SwiftUI
 
 struct Parameters {
     
-    static let logger = Logger(Logger.PARAMETER_INFO, category: "Logger")
+    static let logger = Logger(Logger.PARAMETER_INFO, category: "Parameters")
     static let userDefaults: UserDefaults = UserDefaults()
-
+    
     static func getAppName() -> String {
         return UserDefaults.standard.string(forKey: Labels.APPNAME) ?? Defaults.APPNAME
     }
@@ -50,6 +50,7 @@ struct Parameters {
         userDefaults.set(petName, forKey: Labels.PETNAME)
     }
 
+    
     static func getURL() -> String {
         return userDefaults.string(forKey: Labels.URL) ?? Defaults.URL
     }
@@ -59,8 +60,10 @@ struct Parameters {
     }
 
     static func getRecordNumber() -> Float {
-        var value:Int = userDefaults.integer(forKey: Labels.RECORDNUMBER)
-        if value==0 {value = Defaults.RECORDNUMBER}
+        let value = userDefaults.integer(forKey: Labels.RECORDNUMBER)
+        if value==0 {
+            return Defaults.RECORDNUMBER
+        }
         return Float(value)
     }
     
@@ -102,8 +105,10 @@ struct Parameters {
     }
 
     static func getFeedingNext() -> Int {
-        var value:Int = userDefaults.integer(forKey: Labels.FEEDINGNEXT)
-        if value == 0 {value = Defaults.FEEDINGNEXT}
+        let value = userDefaults.integer(forKey: Labels.FEEDINGNEXT)
+        if value==0 {
+            return Int(Defaults.FEEDINGNEXT)
+        }
         return value
     }
     
@@ -113,7 +118,7 @@ struct Parameters {
 
     static func getNotificationBefore() -> Int {
         var value:Int = userDefaults.integer(forKey: Labels.NOTIFYBEFORE)
-        if value == 0 {value = Defaults.NOTIFYBEFORE}
+        if value == 0 {value = Int(Defaults.NOTIFYBEFORE) }
         return value
     }
     
@@ -123,7 +128,7 @@ struct Parameters {
 
     static func getNotifyEvery() -> Int {
         var value:Int = userDefaults.integer(forKey: Labels.NOTIFEVERY)
-        if value==0 {value = Defaults.NOTIFYEVERY}
+        if value==0 {value = Int(Defaults.NOTIFYEVERY)}
         return value
     }
     
@@ -165,63 +170,4 @@ struct Parameters {
     
 
  }
-
-struct Labels {
-    static let WALLPAPERNAME="wallpapername"
-    static let WALLPAPERMAGNIFYBY="wallpapermagnifyby"
-    static let WALLPAPEROFFSET="wallpaperoffset"
-    static let CUSTOMIZEWALLPAPER="customizewallpaper"
-    
-    static let ACTION="action"
-    static let APPNAME="appname"
-    static let URL="url"
-    static let ACCOUNT="account"
-    static let PETNAME="petname"
-    static let PREVIOUS="previous"
-    static let FEEDER="feeder"
-    static let ALIAS="alias"
-    static let PASSWORD="password"
-    static let PORTION="portion"
-    static let TIMESTAMP="timestamp"
-    static let RECORDNUMBER="recordnumber"
-    static let DEVICETOKEN="devicetoken"
-    static let LOGLEVEL="loglevel"
-    
-    static let FEEDINGNEXT="feedingnext"
-    static let NOTIFYBEFORE="notifbefore"
-    static let NOTIFEVERY="notifevery"
-    
-    static let APPFEEDING:String="feeding"
-    static let APPNOTIFICATION:String="notification"
-    
-    static let ACTION_GET:String="get"
-    static let ACTION_ADD:String="add"
-    static let ACTION_DEL:String="del"
-    static let ACTION_SUB:String="sub"
-    static let ACTION_UNS:String="uns"
-
-    static let RETURNCODE="returncode"
-    static let MESSAGE="message"
-    
-    static let FEEDING_ENABLED=Color.black
-    static let FEEDING_DISABLED=Color.gray
-}
-
-struct Defaults {
-    static let APPNAME:String="who-fed-blaise"
-    static let CUSTOMIZEWALLPAPER:Bool=true
-    static let WALLPAPERNAME:String="Blaise"
-    static let URL:String="http://hostname:port"
-    static let ACCOUNT:String="alias@email.com"
-    static let RECORDNUMBER:Int=3
-    static let DEVICETOKEN:String=""
-    static let LOGLEVEL:String=Logger.PARAMETER_DEFAULT
-
-    static let PETNAME:String="petname"
-    static let FEEDER:String=Defaults.ACCOUNT
-    static let PASSWORD:String=""
-    static let PORTION:Int=1
-    static let FEEDINGNEXT:Int=60*12
-    static let NOTIFYBEFORE:Int=60
-    static let NOTIFYEVERY:Int=10
-}
+*/

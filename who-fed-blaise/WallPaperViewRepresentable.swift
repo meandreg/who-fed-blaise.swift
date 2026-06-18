@@ -13,7 +13,7 @@ struct WallPaperViewControllerRepresentable: UIViewControllerRepresentable {
     
     //typealias UIViewControllerType = PHPickerViewController
 
-    let logger = Logger(Logger.PARAMETER_DEBUG, category: "WallPaperRepresentable")
+    let logger = Logger(category: "WallPaperRepresentable")
     
     @Binding var showPicker: Bool
     @Binding var imagePicked: Bool

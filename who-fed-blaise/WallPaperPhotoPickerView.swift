@@ -11,7 +11,7 @@ import PhotosUI
 @available(iOS 17.0, *)
 struct WallPaperPhotoPickerView: View {
     
-    @ObservedObject var feedingViewModel: FeedingViewModel
+    @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
     @State private var selectedPhotoItem:PhotosPickerItem? = nil
     
     @State private var image:UIImage? = nil
@@ -19,14 +19,14 @@ struct WallPaperPhotoPickerView: View {
     @State private var showPicker: Bool = false
     
     var body: some View {
-        WallPaperView(feedingViewModel: feedingViewModel, showPicker: $showPicker)
+        WallPaperView(whoFedBlaiseViewModel: whoFedBlaiseViewModel, showPicker: $showPicker)
         .photosPicker(isPresented: $showPicker, selection: $selectedPhotoItem)
         .onChange(of: selectedPhotoItem) { oldValue, newValue in
             Task{
                 guard let imageData = try await selectedPhotoItem?.loadTransferable(type: Data.self) else {return}
                 guard let uiImage = UIImage(data: imageData) else {return}
-                Parameters.setWallPaperUIImage(uiImage)
-                feedingViewModel.wallPaperImage = Parameters.getWallPaperImage()
+                WhoFedBlaiseDefaults.saveWallpaperUIImage(whoFedBlaiseViewModel, uiImage: uiImage)
+                whoFedBlaiseViewModel.wallpaperImage = WhoFedBlaiseDefaults.getWallpaperImage(whoFedBlaiseViewModel)
             }
         }
     }
