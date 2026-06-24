@@ -67,4 +67,6 @@ struct Labels {
     
     static let FEEDING_ENABLED=Color.black
     static let FEEDING_DISABLED=Color.gray
+    
+    static let OPACITY="opacity"
 }

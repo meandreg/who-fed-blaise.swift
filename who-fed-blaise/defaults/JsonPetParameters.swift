@@ -36,6 +36,8 @@ struct JsonPetParameters: Encodable, Decodable {
     var foregroundColor: Int
     var backgroundColor: Int
     
+    var opacity: Float
+    
     var feedingRecords: [JsonFeedingRecord] = []
     
     init(_ from: WhoFedBlaiseViewModel) throws {
@@ -68,6 +70,8 @@ struct JsonPetParameters: Encodable, Decodable {
         self.foregroundColor = from.foregroundColor
         self.backgroundColor = from.backgroundColor
         
+        self.opacity = from.opacity
+        
         for feedingRecord in from.feedingRecords {
             self.feedingRecords.append(JsonFeedingRecord(from: feedingRecord))
         }
@@ -99,6 +103,7 @@ struct JsonPetParameters: Encodable, Decodable {
         case fontsizeFooter = "fontsizefooter"
         case foregroundColor = "foregroundcolor"
         case backgroundColor = "backgroundcolor"
+        case opacity = "opacity"
     }
 }
 

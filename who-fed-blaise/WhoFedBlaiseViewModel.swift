@@ -69,6 +69,7 @@ class WhoFedBlaiseViewModel: ObservableObject {
     
     @Published var foregroundColor: Int = Defaults.FOREGROUNDCOLOR
     @Published var backgroundColor: Int = Defaults.BACKGROUNDCOLOR
+    @Published var opacity: Float = Defaults.OPACITY
     
     @Published var feederPets: PetArray = PetArray(Labels.FEEDERPETS,persistant: false)
     @Published var selectedPets: PetArray = PetArray(Labels.SELECTEDPETS,persistant: true)

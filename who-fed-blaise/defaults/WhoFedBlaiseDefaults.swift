@@ -87,6 +87,7 @@ class WhoFedBlaiseDefaults {
             
             target.foregroundColor = parameters.foregroundColor
             target.backgroundColor = parameters.backgroundColor
+            target.opacity = parameters.opacity
             
             for jsonFeedingRecord in parameters.feedingRecords {
                 target.feedingRecords.append(WhoFedBlaiseDefaults.feedingRecord(from: jsonFeedingRecord))

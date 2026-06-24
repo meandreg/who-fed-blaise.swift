@@ -11,9 +11,6 @@ struct SettingView: View {
     
     @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
     
-    //var feederAccounts: [String] = ["clairedufour@free.fr","guillaume@meandre.eu","blaiselechat@gmail.com"]
-    //private let logLevels = [Logger.PARAMETER_DEFAULT,Logger.PARAMETER_ERROR,Logger.PARAMETER_WARNING,Logger.PARAMETER_INFO,Logger.PARAMETER_DEBUG]
-    
     var body: some View {
         
         VStack {
@@ -44,9 +41,11 @@ struct SettingView: View {
                     LabeledTextField(label: "Hostname", value: $whoFedBlaiseViewModel.hostname)
                         .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                     LabeledTextField(label: "port", value: $whoFedBlaiseViewModel.port)
+                        .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                 }
                 
                 LabeledTextField(label: "feeder", value: $whoFedBlaiseViewModel.feeder)
+                    .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                     .onAppear() {
                         whoFedBlaiseViewModel.getFeederPets()
                     }
@@ -87,6 +86,7 @@ struct SettingView: View {
                         whoFedBlaiseViewModel.swapTo(newId)
                     }
                 })
+                .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                 
                 SliderText(min: 1, max: 10,
                            label1: LocalizedStringKey(Labels.RECORDNUMBER),
@@ -94,6 +94,7 @@ struct SettingView: View {
                            variable: $whoFedBlaiseViewModel.recordNumber,
                            modulo:  1
                 )
+                .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                 
                 SliderText(min: 60, max: 24*60,
                            label1: LocalizedStringKey(Labels.FEEDINGNEXT),
@@ -101,6 +102,7 @@ struct SettingView: View {
                            variable: $whoFedBlaiseViewModel.feedingNext,
                            modulo:  60
                 )
+                .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                 
                 SliderText(min: 1, max: 60,
                            label1: LocalizedStringKey(Labels.NOTIFYBEFORE),
@@ -108,6 +110,7 @@ struct SettingView: View {
                            variable: $whoFedBlaiseViewModel.notifyBefore,
                            modulo:  1
                 )
+                .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                 
                 SliderText(min: 1, max: 60,
                            label1: LocalizedStringKey(Labels.NOTIFEVERY),
@@ -115,6 +118,7 @@ struct SettingView: View {
                            variable: $whoFedBlaiseViewModel.notifyEvery,
                            modulo:  1
                 )
+                .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                 
                 Picker(LocalizedStringKey(Labels.LOGLEVEL),
                     selection: $whoFedBlaiseViewModel.logLevel,
@@ -125,6 +129,7 @@ struct SettingView: View {
                             }
                         }
                 )
+                .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                 .pickerStyle(.menu)
                 .onChange(of: whoFedBlaiseViewModel.logLevel) { newLogLevel in
                     whoFedBlaiseViewModel.setLogLevel(newLogLevel)
@@ -133,7 +138,7 @@ struct SettingView: View {
         }
         //.background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
         .listStyle(.plain)
-        .opacity(0.8)
+        .opacity(Double(whoFedBlaiseViewModel.opacity/100))
         //.backgroundColor(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
         /*.listStyle(.plain)
         .font(.title3)

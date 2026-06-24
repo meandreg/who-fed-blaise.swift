@@ -26,7 +26,9 @@
 "photo-one-tap" = "Tap once to zoom down";
 "photo-two-taps" = "Tap twice to zoom up";
 "photo-drag" = "Drag image to center";
-"photo-color" = "Select a color";
+"photo-color" = "Foreground color";
+"photo-background" = "Background color";
+"opacity" = "Opacity";
 
 "port" = "Port";
 "portion-full" = "Full Portion";

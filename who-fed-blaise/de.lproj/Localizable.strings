@@ -35,7 +35,9 @@
 "photo-one-tap" = "Einmal tippen, um herunterzuzoomen";
 "photo-two-taps" = "Zum Vergrößern zweimal tippen";
 "photo-drag" = "Bild in die Mitte ziehen";
-"photo-color" = "Farbwahlschalter";
+"photo-color" = "Vordergrundfarbe";
+"photo-background" = "Hintergrundfarbe";
+"opacity" = "Opazität";
 
 "color-black" = "Schwarz";
 "color-blue" = "Blau";

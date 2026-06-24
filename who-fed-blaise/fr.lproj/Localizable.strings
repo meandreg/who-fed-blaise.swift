@@ -40,7 +40,9 @@
 "photo-one-tap" = "Tapez une fois pour zoomer";
 "photo-two-taps" = "Tapez deux fois pour dé-zoomer";
 "photo-drag" = "Déplacez l'image avec le doigt";
-"photo-color" = "Selecteur de couleur";
+"photo-color" = "Couleur texte";
+"photo-background" = "Couleur d'arrière plan";
+"opacity" = "Opacité";
 
 "color-black" = "Noir";
 "color-blue" = "Bleu";

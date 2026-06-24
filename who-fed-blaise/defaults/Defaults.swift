@@ -32,7 +32,7 @@ struct Defaults {
     static let NOTIFYEVERY:Float=10
     
     static let WALLPAPERNAME:String="Blaise"
-    static let WALLPAPERMAGNIFYBY:Double = 2.5
+    static let WALLPAPERMAGNIFYBY:Double = 5
     static let WALLPAPEROFFSETWIDTH:Double = 1.5
     static let WALLPAPEROFFSETHEIGHT:Double = 16
     
@@ -41,6 +41,8 @@ struct Defaults {
     static let FONTSIZE_TIMESTAMP:CGFloat = UIScreen.main.bounds.width/15
     static let FONTSIZE_FEEDER:CGFloat = UIScreen.main.bounds.width/20
     static let FONTSIZE_FOOTER:CGFloat = UIScreen.main.bounds.width/15
+    
+    static let OPACITY:Float = 80
     
     static let FOREGROUNDCOLOR:Int = 0
     static let BACKGROUNDCOLOR:Int = 14

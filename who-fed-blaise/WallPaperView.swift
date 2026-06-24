@@ -110,6 +110,14 @@ struct WallPaperView: View {
                 .pickerStyle(.menu)
             }
             .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
+            
+            SliderText(min: 0, max: 100,
+                       label1: LocalizedStringKey(Labels.OPACITY),
+                       label2: "%",
+                       variable: $whoFedBlaiseViewModel.opacity,
+                       modulo:  1
+            )
+            .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
             Spacer()
         }
         .padding(10)
@@ -118,6 +126,7 @@ struct WallPaperView: View {
                 .stroke(lineWidth: 4)
                 .opacity(0.1)
         )*/
-        .background(Color.gray.opacity(0.2))
+        .opacity(Double(whoFedBlaiseViewModel.opacity/100))
+        //.background(Color.gray.opacity(0.8))
     }
 }
