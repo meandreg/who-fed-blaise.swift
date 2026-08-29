@@ -44,7 +44,7 @@ struct SettingView: View {
                         .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                 }
                 
-                LabeledTextField(label: "feeder", value: $whoFedBlaiseViewModel.feeder)
+                /*LabeledTextField(label: "feeder", value: $whoFedBlaiseViewModel.feeder)
                     .background(Defaults.COLORS[whoFedBlaiseViewModel.backgroundColor])
                     .onAppear() {
                         whoFedBlaiseViewModel.getFeederPets()
@@ -52,15 +52,16 @@ struct SettingView: View {
                     .onSubmit {
                         whoFedBlaiseViewModel.getFeederPets()
                     }
+                 */
 
-                /*FeederPasswordTextFields(feeder: $whoFedBlaiseViewModel.feeder, password: $whoFedBlaiseViewModel.password)
+                FeederPasswordTextFields(feeder: $whoFedBlaiseViewModel.feeder, password: $whoFedBlaiseViewModel.password)
                     .onAppear() {
                         whoFedBlaiseViewModel.getFeederPets()
                     }
                     .onSubmit {
                         whoFedBlaiseViewModel.getFeederPets()
                     }
-                    .onChange(of: whoFedBlaiseViewModel.feeder) { newValue in
+                    /*.onChange(of: whoFedBlaiseViewModel.feeder) { newValue in
                         whoFedBlaiseViewModel.getFeederPets()
                     }
                 */

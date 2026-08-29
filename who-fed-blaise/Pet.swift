@@ -17,6 +17,7 @@ class Pet: Identifiable, Decodable, Encodable {
     var account: String
     var feeder: String
     var alias: String
+    var password: String
     var role: Int
     var feedingRecords: [FeedingRecord] = []
     
@@ -48,11 +49,12 @@ class Pet: Identifiable, Decodable, Encodable {
         return "\(hostname):\(port)@\(alias)://\(account).\(name)(\(id))"
     }
 
-    init(hostname: String, port: String, id: UUID, name: String, type: String, race: String, account: String, feeder: String, alias: String, role: Int) {
+    init(hostname: String, port: String, id: UUID, name: String, type: String, race: String, account: String, feeder: String, password: String, alias: String, role: Int) {
         self.hostname = hostname
         self.port = port
         self.id = id
         self.feeder = feeder
+        self.password = password
         self.alias = alias
         self.role = role
         self.name = name
@@ -62,7 +64,7 @@ class Pet: Identifiable, Decodable, Encodable {
     }
     
     convenience init(_ jsonPet: JsonPet) {
-        self.init(hostname: jsonPet.hostname, port: jsonPet.port, id: jsonPet.id, name: jsonPet.name, type: jsonPet.type, race: jsonPet.race, account: jsonPet.account, feeder: jsonPet.feeder, alias: jsonPet.alias, role: jsonPet.role)
+        self.init(hostname: jsonPet.hostname, port: jsonPet.port, id: jsonPet.id, name: jsonPet.name, type: jsonPet.type, race: jsonPet.race, account: jsonPet.account, feeder: jsonPet.feeder,password: jsonPet.password, alias: jsonPet.alias, role: jsonPet.role)
     }
     
     var string: String {

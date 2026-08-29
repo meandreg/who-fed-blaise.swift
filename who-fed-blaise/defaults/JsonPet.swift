@@ -13,6 +13,7 @@ struct JsonPet:Encodable, Decodable {
     var race: String
     var account: String
     var feeder: String
+    var password: String
     var alias: String
     var role: Int
     var hostname: String
@@ -26,6 +27,7 @@ struct JsonPet:Encodable, Decodable {
         self.race = from.race
         self.account = from.account
         self.feeder = from.feeder
+        self.password = from.password
         self.alias = from.alias
         self.role = from.role
         self.hostname = from.hostname

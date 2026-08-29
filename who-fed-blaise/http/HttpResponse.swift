@@ -81,12 +81,12 @@ class HttpResponse: Decodable {
         throw HtttpResponseErrors.invalidUpdatedPet(self)
     }
 
-    func getFeederPets(hostname: String, port: String) throws -> PetArray {
+    func getFeederPets(hostname: String, port: String, feeder: String, password: String) throws -> PetArray {
         HttpResponse.logger.setMethod("getFeederPets(...")
         if let httpFeederPets = self.data?.feederpets {
             let feederPets: PetArray = PetArray(Labels.FEEDERPETS,persistant: false)
             for httpPet in httpFeederPets {
-                let pet = try getPet(hostname: hostname, port: port, pet: httpPet)
+                let pet = try getPet(hostname: hostname, port: port, feeder: feeder, password: password, pet: httpPet)
                 do {
                     try feederPets.append(pet)
                 } catch {
@@ -99,19 +99,20 @@ class HttpResponse: Decodable {
         throw HtttpResponseErrors.invalidFeederPets(self)
     }
 
-    func getPet(hostname: String, port: String, pet: HttpPet) throws -> Pet {
-        return Pet(hostname: hostname, port: port, id: pet.id, name: pet.name , type: pet.type, race: pet.race, account: pet.account, feeder: pet.feeder, alias: pet.alias, role: pet.role)
+    func getPet(hostname: String, port: String, feeder: String, password: String, pet: HttpPet) throws -> Pet
+    {
+        return Pet(hostname: hostname, port: port, id: pet.id, name: pet.name , type: pet.type, race: pet.race, account: pet.account, feeder: feeder, password: password, alias: pet.alias, role: pet.role)
     }
     
     func getFeedingRecord(record: HttpFeedingRecord) -> FeedingRecord {
         return FeedingRecord(timestamp: record.timestamp, portion: record.portion, feeder: record.feeder, alias: record.alias, name: record.name)
     }
     
-    func getFeedingRecords(hostname: String, port: String) throws -> Pet {
+    func getFeedingRecords(hostname: String, port: String, feeder: String, password: String) throws -> Pet {
         HttpResponse.logger.setMethod("getFeedingRecords(...")
         if let httpPet = self.data?.pet {
             HttpResponse.logger.setMethod("dispatchFeedingRecords()")
-            let pet: Pet = try getPet(hostname: hostname, port: port, pet: httpPet)
+            let pet: Pet = try getPet(hostname: hostname, port: port, feeder: feeder, password: password, pet: httpPet)
             if let httpFeedingRecords = self.data?.pet?.feedingRecords {
                 for httpFeedingRecord in httpFeedingRecords {
                     let feedingRecord = getFeedingRecord(record: httpFeedingRecord)

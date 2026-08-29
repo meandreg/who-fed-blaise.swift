@@ -53,6 +53,7 @@ class WhoFedBlaiseViewModel: ObservableObject {
     
     @Published var recordNumber: Float = Defaults.RECORDNUMBER
     @Published var feedingNext :Float = Defaults.FEEDINGNEXT
+    @Published var feedingNextUnit :Float = Defaults.FEEDINGNEXT
     @Published var notifyBefore :Float = Defaults.NOTIFYBEFORE
     @Published var notifyEvery :Float = Defaults.NOTIFYEVERY
     
@@ -271,10 +272,10 @@ class WhoFedBlaiseViewModel: ObservableObject {
                 let id = try response.getUpdatedPetId()
                 dispatchUpdatedPet(id)
             case Labels.ACTION_GETFEEDERPETS:
-                let feederPets = try response.getFeederPets(hostname: self.hostname, port: self.port)
+                let feederPets = try response.getFeederPets(hostname: self.hostname, port: self.port, feeder: self.feeder, password: self.password)
                 dispatchFeederPets(feederPets)
             case Labels.ACTION_GETFEEDINGRECORDS, Labels.ACTION_ADDFEEDINGRECORD, Labels.ACTION_DELFEEDINGRECORD:
-                let pet = try response.getFeedingRecords(hostname: self.hostname, port: self.port)
+                let pet = try response.getFeedingRecords(hostname: self.hostname, port: self.port, feeder: self.feeder, password: self.password)
                 dispatchPetFeedingRecords(pet)
             default:
                 logger.error("Invalid action: \(data.action)")
@@ -300,19 +301,19 @@ class WhoFedBlaiseViewModel: ObservableObject {
         }
     }
     
-    func dispatchFeederPets(_ feederPets: PetArray) {
+    func dispatchFeederPets(_ feederPets0: PetArray) {
         logger.setMethod("dispatchFeederPets(...)")
         DispatchQueue.main.async {
-            self.feederPets.removeAll()
-            if feederPets.isEmpty {
+            var feederPets1 = PetArray(Labels.FEEDERPETS,persistant: false)
+            if feederPets0.isEmpty {
                 self.logger.warn("FeederPets list is empty")
                 return
             }
-            for pet in feederPets.pets {
+            for pet in feederPets0.pets {
                 do {
-                    try self.feederPets.append(pet)
+                    try feederPets1.append(pet)
                 } catch {
-                    self.logger.error("Failed to add \(pet.short) to \(self.feederPets.name); \(error)")
+                    self.logger.error("Failed to add \(pet.short) to \(feederPets1.name); \(error)")
                 }
                 if self.id == pet.id {
                     self.swapTo(pet.id)
@@ -324,9 +325,20 @@ class WhoFedBlaiseViewModel: ObservableObject {
             } catch {
                 self.logger.error("Failed to stringify pet list \(self.feederPets.name); \(error)")
             }
-            if self.selectedPets.isEmpty {
-                self.addFeederPet()
+
+            if !feederPets1.isEmpty {
+                if self.selectedPets.isEmpty {
+                    do {
+                        let pet = try feederPets1.get(0)
+                        try self.selectedPets.append(pet)
+                        self.switchTo(pet.id)
+                    } catch {
+                        self.logger.error("Failed to get(0) from \(feederPets1.name); \(error)")
+                    }
+                }
             }
+            self.feederPets = feederPets1
+
         }
     }
 

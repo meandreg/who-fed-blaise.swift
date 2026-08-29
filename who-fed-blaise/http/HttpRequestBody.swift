@@ -13,6 +13,7 @@ class HttpRequestBody: Encodable, Decodable {
     var action: String
     var logLevel: Int?
     var feeder: String?
+    var password: String?
     var role: Int?
     var account: String?
     var pet: UUID?
@@ -22,15 +23,16 @@ class HttpRequestBody: Encodable, Decodable {
     var portion: Float?
 
     // Base v2 request
-    init(action: String, logLevel: Int?=nil, feeder: String?=nil) {
+    init(action: String, logLevel: Int?=nil, feeder: String?=nil, password: String?=nil) {
         self.action=action
         self.logLevel=logLevel
         self.feeder=feeder
+        self.password=password
     }
 
     // Request v2 feeder's pet list
     static func HttpRequestFeederPets(_ wfb: WhoFedBlaiseViewModel) throws -> HttpRequestBody {
-        return HttpRequestBody(action: Labels.ACTION_GETFEEDERPETS, logLevel: wfb.logLevel, feeder: wfb.feeder)
+        return HttpRequestBody(action: Labels.ACTION_GETFEEDERPETS, logLevel: wfb.logLevel, feeder: wfb.feeder, password: wfb.password)
     }
     
     // Request v2 device latest updated pet id
@@ -41,35 +43,35 @@ class HttpRequestBody: Encodable, Decodable {
     }
     
     // Request pet's feeding records
-    convenience init(action: String, logLevel: Int, feeder: String, pet: UUID, recordNumber: Int) {
-        self.init(action: action, logLevel: logLevel, feeder: feeder)
+    convenience init(action: String, logLevel: Int, feeder: String, password: String, pet: UUID, recordNumber: Int) {
+        self.init(action: action, logLevel: logLevel, feeder: feeder, password: password)
         self.pet = pet
         self.recordNumber = recordNumber
         self.deviceToken = WhoFedBlaiseViewModel.deviceToken
     }
     
     static func HttpRequestFeedingRecords(_ wfb: WhoFedBlaiseViewModel) throws -> HttpRequestBody {
-        return HttpRequestBody(action: Labels.ACTION_GETFEEDINGRECORDS, logLevel: wfb.logLevel, feeder: wfb.feeder,  pet: wfb.id, recordNumber: Int(wfb.recordNumber))
+        return HttpRequestBody(action: Labels.ACTION_GETFEEDINGRECORDS, logLevel: wfb.logLevel, feeder: wfb.feeder, password: wfb.password,  pet: wfb.id, recordNumber: Int(wfb.recordNumber))
     }
     
     // Request to delete feeding record
-    convenience init(action: String, logLevel: Int,feeder: String, pet: UUID, recordNumber: Int, timestamp: Date) {
-        self.init(action: action, logLevel: logLevel, feeder: feeder, pet: pet, recordNumber: recordNumber)
+    convenience init(action: String, logLevel: Int,feeder: String, password: String, pet: UUID, recordNumber: Int, timestamp: Date) {
+        self.init(action: action, logLevel: logLevel, feeder: feeder, password: password, pet: pet, recordNumber: recordNumber)
         self.timestamp = timestamp
     }
     
     static func HttpRequestDelFeedingRecord(_ wfb: WhoFedBlaiseViewModel, timestamp: Date) throws -> HttpRequestBody {
-        return HttpRequestBody(action: Labels.ACTION_DELFEEDINGRECORD, logLevel: wfb.logLevel, feeder: wfb.feeder, pet: wfb.id, recordNumber: Int(wfb.recordNumber), timestamp: timestamp)
+        return HttpRequestBody(action: Labels.ACTION_DELFEEDINGRECORD, logLevel: wfb.logLevel, feeder: wfb.feeder, password: wfb.password, pet: wfb.id, recordNumber: Int(wfb.recordNumber), timestamp: timestamp)
     }
     
     // Request to add feeding record
-    convenience init(action: String, logLevel: Int,feeder: String, pet: UUID, recordNumber: Int, timestamp: Date, portion: Float) {
-        self.init(action: action, logLevel: logLevel, feeder: feeder, pet: pet, recordNumber: recordNumber, timestamp: timestamp)
+    convenience init(action: String, logLevel: Int,feeder: String, password: String, pet: UUID, recordNumber: Int, timestamp: Date, portion: Float) {
+        self.init(action: action, logLevel: logLevel, feeder: feeder, password: password, pet: pet, recordNumber: recordNumber, timestamp: timestamp)
         self.portion = portion
     }
     
     static func HttpRequestAddFeedingRecord(_ wfb: WhoFedBlaiseViewModel, timestamp: Date, portion: Float) throws -> HttpRequestBody {
-        return HttpRequestBody(action: Labels.ACTION_ADDFEEDINGRECORD, logLevel: wfb.logLevel, feeder: wfb.feeder, pet: wfb.id, recordNumber: Int(wfb.recordNumber), timestamp: timestamp, portion: portion)
+        return HttpRequestBody(action: Labels.ACTION_ADDFEEDINGRECORD, logLevel: wfb.logLevel, feeder: wfb.feeder, password: wfb.password, pet: wfb.id, recordNumber: Int(wfb.recordNumber), timestamp: timestamp, portion: portion)
     }
     
     enum CodingKeys : String, CodingKey {
@@ -78,6 +80,7 @@ class HttpRequestBody: Encodable, Decodable {
         case action
         case logLevel = "loglevel"
         case feeder
+        case password
         case role
         case account = "account"
         case pet

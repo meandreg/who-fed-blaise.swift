@@ -15,6 +15,7 @@ struct JsonPetParameters: Encodable, Decodable {
     var port: String
     var account: String
     var feeder: String
+    var password: String
     var role: Int
     var name: String
     var type: String
@@ -46,6 +47,7 @@ struct JsonPetParameters: Encodable, Decodable {
         self.type = from.type
         self.race = from.race
         self.feeder = from.feeder
+        self.password = from.password
         self.account = from.account
         self.hostname = from.hostname
         self.port = from.port
@@ -86,6 +88,7 @@ struct JsonPetParameters: Encodable, Decodable {
         case type
         case race
         case feeder
+        case password
         case role
         case recordNumber = "recordnumber"
         case logLevel = "loglevel"
