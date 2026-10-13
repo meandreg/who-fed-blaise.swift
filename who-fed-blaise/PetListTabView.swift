@@ -20,13 +20,13 @@ struct PetListTabView: View {
             if whoFedBlaiseViewModel.selectedPetConfig == true {
                 SettingView(whoFedBlaiseViewModel: whoFedBlaiseViewModel)
             } else if whoFedBlaiseViewModel.selectedPetPhoto == true {
-                if #available(iOS 17.0, *) {
-                    WallPaperPhotoPickerView(whoFedBlaiseViewModel: whoFedBlaiseViewModel)
+                if #available(iOS 19, *) {
+                    WallPaperPhotoPickerView(wfb: whoFedBlaiseViewModel)
                 } else {
-                    WallPaperPHPickerView(whoFedBlaiseViewModel: whoFedBlaiseViewModel)
+                    WallPaperPHPickerView(wfb: whoFedBlaiseViewModel)
                 }
             } else {
-                FeedingView(whoFedBlaiseViewModel: whoFedBlaiseViewModel)
+                FeedingView(wfb: whoFedBlaiseViewModel)
                     .onAppear(perform: {
                         NotificationManager.notificatioManager.requestNotification()
                         whoFedBlaiseViewModel.getFeedingRecords()

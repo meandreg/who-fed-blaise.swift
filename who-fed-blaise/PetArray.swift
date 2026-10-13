@@ -7,7 +7,8 @@
 
 import Foundation
 
-class PetArray: Decodable, Encodable  {
+class PetArray: Sequence, IteratorProtocol, Decodable, Encodable  {
+    
     //static var logger: Logger = Logger(Logger.LEVEL_DEBUG, category: "PetArray")
     static let userDefaults: UserDefaults = .standard
     static let CURRENT_UNSET: Int = -1
@@ -17,6 +18,11 @@ class PetArray: Decodable, Encodable  {
     public let name: String
     private(set) var current: Int = PetArray.CURRENT_UNSET
     private(set) var pets: [Pet] = []
+    private(set) var iterator: Int = 0
+    
+    var string: String {
+        return Json.stringify(encodable: self)
+    }
     
     init(_ name: String, persistant: Bool) {
         self.name = name
@@ -47,6 +53,19 @@ class PetArray: Decodable, Encodable  {
         try container.encode(pets, forKey: .pets)
     }
     
+    func next() -> Pet? {
+        if pets.count==0 {
+            return nil
+        } else if  iterator==pets.count {
+            iterator = 0
+            return nil
+        } else {
+            let pet = pets[iterator]
+            iterator += 1
+            return pet
+        }
+    }
+    
     var isEmpty: Bool {
         return pets.count == 0
     }
@@ -73,7 +92,7 @@ class PetArray: Decodable, Encodable  {
         return exists(pet.key)
     }
       
-    private func exists(_ hostname: String, _ port: String, _ id: UUID, _ feeder: String) -> Bool {
+    private func exists(_ hostname: String, _ port: Int, _ id: UUID, _ feeder: String) -> Bool {
         return exists(Key(hostname, port, id, feeder))
     }
     
@@ -106,7 +125,7 @@ class PetArray: Decodable, Encodable  {
         return try indexOf(pet.key)
     }
     
-    private func indexOf(_ hostname: String, _ port: String, _ id: UUID, _ feeder: String) throws -> Int {
+    private func indexOf(_ hostname: String, _ port: Int, _ id: UUID, _ feeder: String) throws -> Int {
         return try indexOf(Key(hostname, port, id, feeder))
     }
     
@@ -153,7 +172,7 @@ class PetArray: Decodable, Encodable  {
         return try get(pet.key)
     }
     
-    func get(_ hostname: String, _ port: String, _ id: UUID, _ feeder: String) throws -> Pet {
+    func get(_ hostname: String, _ port: Int, _ id: UUID, _ feeder: String) throws -> Pet {
         return try get(Key(hostname, port, id, feeder))
     }
     
@@ -207,7 +226,7 @@ class PetArray: Decodable, Encodable  {
         return pet
     }
 
-    public func setCurrent(hostname: String, port: String, id: UUID, feeder: String) throws -> Pet {
+    public func setCurrent(hostname: String, port: Int, id: UUID, feeder: String) throws -> Pet {
         let index  = try indexOf(Key(hostname, port, id, feeder))
         return try setCurrent(index)
     }
@@ -294,7 +313,7 @@ class PetArray: Decodable, Encodable  {
         logger.setMethod("append(\(pet.short)")
         do {
             let index = try indexOf(pet)
-            logger.warn("Eexisting at index \(index)")
+            logger.warn("Existing at index \(index)")
             return
         } catch {
             logger.debug("Does not exist)")
@@ -304,14 +323,6 @@ class PetArray: Decodable, Encodable  {
             logger.info("Success at index \(pets.count-1)")
         }
     }
-   
-    public func string() throws -> String {
-        let data = try Json.encoder.encode(self)
-        guard let string = String(data: data, encoding: .utf8) else {
-            throw PetArrayErrors.failedToEncode("Failed to stingify pet array \(name)")
-        }
-        return string
-    }
     
     public func save() {
         logger.setMethod("save()")
@@ -320,7 +331,7 @@ class PetArray: Decodable, Encodable  {
             return
         }
         do {
-            let string = try self.string()
+            let string = try Json.toString(encodable: self)
             logger.debug("value is \(string)")
             PetArray.userDefaults.set(string, forKey: name)
         } catch {
@@ -348,7 +359,7 @@ class PetArray: Decodable, Encodable  {
             current = petArray.current
             pets = petArray.pets
             logger.info("Successfully restored")
-            logger.debug("Restored \(try self.string())")
+            logger.debug("Restored \(self.string)")
         } catch {
             logger.error("Failed to restore pet array \(name); \(error)")
         }

@@ -54,7 +54,8 @@ struct Labels {
     static let APPFEEDING:String="feeding"
     static let APPNOTIFICATION:String="notification"
     
-    static let ACTION_GETUPDATEDPET:String="getupdatedpet"
+    //static let ACTION_GETUPDATEDPET:String="getupdatedpet"
+    static let ACTION_GETLASTUPDATED:String="getlastupdated"
     static let ACTION_GETFEEDERPETS:String="getfeederpets"
     static let ACTION_GETFEEDINGRECORDS:String="getfeedingrecords"
     static let ACTION_ADDFEEDINGRECORD:String="addfeedingrecord"

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RecordView: View {
     
-    @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
+    @ObservedObject var wfb: WhoFedBlaiseViewModel
     var feedingRecord: FeedingRecord
     
     static let portionSize:CGSize = if #available(iOS 17, *) {
@@ -24,7 +24,7 @@ struct RecordView: View {
         VStack (alignment: .center, spacing: 0) {
             let timestamp = DateFormatters.anyDateFormatter.string(from: feedingRecord.timestamp)
             Text(timestamp)
-                .font(.system(size: whoFedBlaiseViewModel.fontsizeTimestamp))
+                .font(.system(size: wfb.fontsizeTimestamp))
                 .frame(maxWidth: .infinity)
             //let portion = String(format: "%.0f", feedingRecord.portion*100)
             HStack {
@@ -38,14 +38,14 @@ struct RecordView: View {
                 }
                 Label(feedingRecord.alias, systemImage: "person")
             }
-            .font(.system(size: whoFedBlaiseViewModel.fontsizeFeeder))
+            .font(.system(size: wfb.fontsizeFeeder))
         }
         .hoverEffect(.highlight)
         .padding()
         .swipeActions(edge: .trailing) {
-            if feedingRecord.alias==whoFedBlaiseViewModel.alias {
+            if feedingRecord.canBeDeleted {
                 Button(role: .destructive) {
-                    whoFedBlaiseViewModel.delFeedingRecord(feedingRecord: feedingRecord)
+                    wfb.delFeedingRecord(feedingRecord: feedingRecord)
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }

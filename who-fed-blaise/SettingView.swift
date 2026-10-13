@@ -17,7 +17,7 @@ struct SettingView: View {
             HStack {
                 Label("", systemImage: "pawprint")
                     .onTapGesture {
-                        WhoFedBlaiseDefaults.save(whoFedBlaiseViewModel)
+                        whoFedBlaiseViewModel.save()
                         whoFedBlaiseViewModel.selectedPetConfig = false
                     }
                 if !whoFedBlaiseViewModel.feederPets.isEmpty {
@@ -71,11 +71,11 @@ struct SettingView: View {
                     content: {
                         ForEach(whoFedBlaiseViewModel.feederPets.pets) {pet in
                             if whoFedBlaiseViewModel.selectedPets.exists(pet.id) {
-                                Label(pet.name+"\n(@) "+pet.account, systemImage: "checkmark")
+                                Label(pet.name+"\n(@) ", systemImage: "checkmark")
                                     .tag(pet.id)
                                     .font(.callout)
                             } else {
-                                Text(pet.name+"\n(@) "+pet.account)
+                                Text(pet.name+"\n(@) ")//+pet.account)
                                     .tag(pet.id)
                             }
                         }
@@ -124,9 +124,9 @@ struct SettingView: View {
                 Picker(LocalizedStringKey(Labels.LOGLEVEL),
                     selection: $whoFedBlaiseViewModel.logLevel,
                     content: {
-                        ForEach(Logger.LABELS, id: \.self) {
+                        ForEach(Logger.LEVELS, id: \.self) {
                                 Text($0)
-                                .tag(Logger.getLevel($0))
+                                //.tag(Logger.getLevel($0))
                             }
                         }
                 )

@@ -18,7 +18,7 @@ struct Defaults {
     static let ACCOUNT:String=""
     static let RECORDNUMBER:Float=3
     static let DEVICETOKEN:String=""
-    static let LOGLEVEL:Int=Logger.LEVEL_DEBUG
+    static let LOGLEVEL:String=Logger.LEVEL_DEBUG
 
     static let PETNAME:String=""
     static let PETTYPE:String=""

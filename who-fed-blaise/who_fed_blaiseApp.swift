@@ -5,6 +5,7 @@
 //  Created by Guillaume Devillers on 12.05.22.
 //
 
+import Foundation
 import SwiftUI
 
 @main
@@ -28,12 +29,4 @@ struct who_fed_blaiseApp: App {
                 }
         }
     }
-}
-
-func isSimulator() -> Bool {
-    #if targetEnvironment(simulator)
-        return true
-    #else
-        return false
-    #endif
 }

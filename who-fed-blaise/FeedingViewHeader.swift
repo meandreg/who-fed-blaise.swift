@@ -11,41 +11,41 @@ struct FeedingViewHeader: View {
     
     let logger = Logger(category: "FeedingViewHeader")
     
-    @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
+    @ObservedObject var wfb: WhoFedBlaiseViewModel
     
     var body: some View {
         HStack {
             VStack {
                 Label("", systemImage: "gearshape")
                     .onTapGesture {
-                        whoFedBlaiseViewModel.selectedPetConfig = true
+                        wfb.selectedPetConfig = true
                     }
                 Label("", systemImage: "photo")
                     .onTapGesture {
-                        whoFedBlaiseViewModel.selectedPetPhoto = true
+                        wfb.selectedPetPhoto = true
                     }
                 Label("", systemImage: "textformat.size")
                     .gesture(
                         TapGesture(count: 2).onEnded({
-                            whoFedBlaiseViewModel.fontsizeHeader(increase: true)
+                            wfb.fontsizeHeader(increase: true)
                         }).exclusively(before: TapGesture(count: 1).onEnded({
-                            whoFedBlaiseViewModel.fontsizeHeader(increase: false)
+                            wfb.fontsizeHeader(increase: false)
                         }))
                     )
             }
             Spacer()
-            PetNameView(whoFedBlaiseViewModel: whoFedBlaiseViewModel)
+            PetNameView(whoFedBlaiseViewModel: wfb)
             Spacer()
-            if whoFedBlaiseViewModel.selectedPetPicker {
-                Label("", systemImage: "checkmark.circle")
-                    .onTapGesture {
-                        whoFedBlaiseViewModel.selectedPetPicker = false
+            if wfb.selectedPets.isMultiple {
+                if wfb.selectedPetPicker {
+                    Label("", systemImage: "checkmark.circle")
+                        .onTapGesture {
+                        wfb.selectedPetPicker = false
                     }
-            } else {
-                if whoFedBlaiseViewModel.selectedPets.isMultiple {
+                } else {
                     Label("", systemImage: "checklist")
                         .onTapGesture {
-                            whoFedBlaiseViewModel.selectedPetPicker = true
+                            wfb.selectedPetPicker = true
                         }
                 }
             }

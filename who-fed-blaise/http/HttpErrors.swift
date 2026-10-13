@@ -7,5 +7,5 @@
 import Foundation
 
 enum HttpErrors: Error {
-    case any(String)
+    case FaultyResponse(String)
 }

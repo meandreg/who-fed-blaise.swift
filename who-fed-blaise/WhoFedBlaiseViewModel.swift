@@ -11,6 +11,7 @@ import Combine
 import UserNotifications
 import BackgroundTasks
 import SwiftUI
+import PhotosUI
 
 class WhoFedBlaiseViewModel: ObservableObject {
     
@@ -23,14 +24,13 @@ class WhoFedBlaiseViewModel: ObservableObject {
     
     init() {
         logger.setMethod("init()")
-        do {
-            set(try selectedPets.getCurrentPet())
-            selectedPetConfig = false
-            AppDelegate.shared.whoFedBlaiseViewModel = self
-            self.getUpdatedPet()
-        } catch {
-            logger.warn("\(error)")
+        if !selectedPets.isEmpty {
+            for pet in selectedPets {
+                getLastUpdated(pet)
+            }
+            //self.selectedPetConfig = false
         }
+        AppDelegate.shared.whoFedBlaiseViewModel = self
     }
     
     //let appDelegate: AppDelegate
@@ -43,8 +43,9 @@ class WhoFedBlaiseViewModel: ObservableObject {
     //@Published var key: Key!
     
     @Published var password: String = Defaults.PASSWORD
-    @Published var role: Int = Role.ROLE_LEVEL_DEFAULT
-    
+    //@Published var role: Int = Role.PET_READONLY
+    var canFeed: Bool = false
+
     @Published var account: String = Defaults.ACCOUNT
     @Published var name: String = Defaults.PETNAME
     @Published var type: String = Defaults.PETTYPE
@@ -82,12 +83,15 @@ class WhoFedBlaiseViewModel: ObservableObject {
     @Published var feedingColor: Color = Labels.FEEDING_ENABLED
 
     @Published var statusMessage = ""
-    @Published var logLevel: Int = Defaults.LOGLEVEL
+    @Published var logLevel: String = Defaults.LOGLEVEL
     private let logger = Logger(category: "WhoFedBlaiseViewModel")
-    private static var LOGLEVEL: Int = Defaults.LOGLEVEL
+    //private static var LOGLEVEL: Int = Defaults.LOGLEVEL
     
+    var intPort: Int {
+        return Int(port) ?? 80
+    }
     var key: Key {
-        return Key(self.hostname,self.port,self.id,self.feeder)
+        return Key(self.hostname,self.intPort,self.id,self.feeder)
     }
     
     var shortId: String {
@@ -99,41 +103,35 @@ class WhoFedBlaiseViewModel: ObservableObject {
     }
     
     var long: String {
-        return Pet.long(hostname,port,alias,account,name,id)
+        return Pet.long(hostname,intPort,alias,account,name,id)
     }
     
     private func set(_ pet: Pet) {
         logger.setMethod("set(\(pet.short))")
-        self.hostname = pet.hostname
-        self.port = pet.port
-        self.feeder = pet.feeder
+        let feeder = pet.feeder
+        let account = pet.account
+        self.setLogLevel(pet.logLevel)
+        self.hostname = account.hostname
+        self.port = String(account.port)
+        self.feeder = feeder.email
+        self.password = feeder.password
         self.id = pet.id
         resetWallpaper()
         resetFeedingRecords()
-        WhoFedBlaiseDefaults.restore(self)
+        restore()
         self.name = pet.name
-        self.account = pet.account
+        self.account = account.alias
         self.race = pet.race
         self.type = pet.type
-        self.role = pet.role
-        WhoFedBlaiseDefaults.save(self)
+        self.canFeed = false
+        save()
         getFeedingRecords()
         logger.debug(self.string)
     }
     
-    public func setLogLevel(_ level: Int) {
+    public func setLogLevel(_ level: String) {
         logger.setMethod("setLogLevel(\(level))")
-        WhoFedBlaiseViewModel.LOGLEVEL = level
-        self.logLevel = level
-        logger.setLevel(level)
-    }
-    
-    public func getLogLevel() -> Int {
-        return self.logLevel
-    }
-    
-    static func getLogLevel()-> Int {
-        return WhoFedBlaiseViewModel.LOGLEVEL
+        Logger.setLevel(level)
     }
     
     private func resetWallpaper() {
@@ -158,132 +156,96 @@ class WhoFedBlaiseViewModel: ObservableObject {
                 guard current.timeIntervalSince(last)>60 else {return}
             }
             self.feedingEnabled = false
-            do {
-                let httpRequestBody = try HttpRequestBody.HttpRequestAddFeedingRecord(self, timestamp: current, portion: portion)
-                let httpBody = try Json.encoder.encode(httpRequestBody)
-                dataTask(httpBody: httpBody)
-            } catch {
-                logger.error("\(error)")
-            }
+            let request = HttpRequestBody.HttpRequestAddFeedingRecord(self, timestamp: current, portion: portion)
+            dataTask(request: request, completionHandler: feedingRecordsCompletionHandler)
         }
     }
     
     func delFeedingRecord(feedingRecord: FeedingRecord) {
         logger.setMethod("delFeedingRecord(\(feedingRecord))")
-        do {
-            let httpRequestBody = try HttpRequestBody.HttpRequestDelFeedingRecord(self, timestamp: feedingRecord.timestamp)
-            let httpBody = try Json.encoder.encode(httpRequestBody)
-            logger.debug("HttpRequestDelFeedingRecord = \(String(data: httpBody, encoding: .utf8)!)")
-            dataTask(httpBody: httpBody)
-        } catch {logger.error("\(error)")}
+        let request = HttpRequestBody.HttpRequestDelFeedingRecord(self, timestamp: feedingRecord.timestamp)
+        dataTask(request: request, completionHandler: feedingRecordsCompletionHandler)
     }
     
     //@objc func get(_ pet: Pet) {
     func getFeedingRecords() {
         logger.setMethod("getFeedingRecords()")
-        do {
-            let httpRequestBody = try HttpRequestBody.HttpRequestFeedingRecords(self)
-            let httpBody = try Json.encoder.encode(httpRequestBody)
-            dataTask(httpBody: httpBody)
-            logger.debug("Get feeding records HttpBody = \(String(data: httpBody, encoding: .utf8)!)")
-        } catch {logger.error("\(error)")}
+        let request = HttpRequestBody.HttpRequestFeedingRecords(self)
+        dataTask(request: request, completionHandler: feedingRecordsCompletionHandler)
     }
     
     func getFeederPets() {
         logger.setMethod("getFeederPets()")
         if feeder == Defaults.FEEDER {return}
-        do {
-            let httpRequestBody = try HttpRequestBody.HttpRequestFeederPets(self)
-            let httpBody = try Json.encoder.encode(httpRequestBody)
-            dataTask(httpBody: httpBody)
-            logger.debug("Get feeder pets HttpBody = \(String(data: httpBody, encoding: .utf8)!)")
-        } catch {logger.error("\(error)")}
+        let request = HttpRequestBody.HttpRequestFeederPets(self)
+        dataTask(request: request, completionHandler: feederPetsCompletionHandler)
     }
 
-    func getUpdatedPet() {
-        logger.setMethod("getUpdatedPet()")
-        if feeder == Defaults.FEEDER {return}
-        do {
-            let httpRequestBody = try HttpRequestBody.HttpRequestUpdatedPet()
-            let httpBody = try Json.encoder.encode(httpRequestBody)
-            logger.info("HttpBody = \(String(data: httpBody, encoding: .utf8)!)")
-            dataTask(httpBody: httpBody)
-        } catch {logger.error("\(error)")}
+    func getLastUpdated(_ pet: Pet) {
+        logger.setMethod("getLastpdated(\(pet.short))")
+        if pet.feeder.email == Defaults.FEEDER {return}
+        let request = HttpRequestBody.HttpRequestLastUpdated(pet)
+        dataTask(request: request, completionHandler: lastUpdatedCompletionHandler)
     }
 
-    func dataTask(httpBody: Data) {
-        logger.setMethod("datatask(\(httpBody))")
-        if let url = URL(string: Defaults.PROTOCOL+"://"+hostname+":"+String(port)+"/"+Labels.APPFEEDING+"/") {
-            logger.debug("dataTask URL is \(url.absoluteString)")
-            var urlRequest: URLRequest = URLRequest(url: url)
-            urlRequest.httpMethod = "POST"
-            urlRequest.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
-            urlRequest.httpBody = httpBody
-            let urlSession = URLSession.shared.dataTask(with: urlRequest, completionHandler: completionHandler)
-            urlSession.resume()
-            logger.debug("call \(url.absoluteString) with \(String(data: httpBody, encoding: .utf8)!)")
+    func dataTask(request: HttpRequestBody, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
+        logger.setMethod("datatask(\(request))")
+        guard let url = URL(string: Defaults.PROTOCOL+"://"+request.hostname+":"+String(request.port)+"/"+Labels.APPFEEDING+"/") else {
+            logger.error("Failed to initiate URL")
+            return
         }
+        logger.debug("URL is \(url.absoluteString)")
+        var urlRequest: URLRequest = URLRequest(url: url)
+        urlRequest.httpMethod = "POST"
+        urlRequest.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+        do {
+            let body = try Json.encoder.encode(request)
+            logger.debug("HttpBody = \(String(data: body, encoding: .utf8)!)")
+            urlRequest.httpBody = body
+        } catch {
+            logger.error("Failed to encode request : \(error)")
+            return
+        }
+        let urlSession = URLSession.shared.dataTask(with: urlRequest, completionHandler: completionHandler)
+        urlSession.resume()
     }
     
-    func completionHandler(data: Data?, response: URLResponse?, error: Error?) {
+    /*func completionHandler(data: Data?, response: URLResponse?, error: Error?) {
         guard checkResponse(data: data, response: response, error: error) else {return}
         decodeResponse(data: data!)
+    }*/
+    
+    func throwFaultyResponse(_ message : String) -> Error {
+        logger.error(message)
+        return HttpErrors.FaultyResponse(message)
     }
     
-    func checkResponse(data: Data?, response: URLResponse?, error: Error?) -> Bool {
+    func checkResponse(data: Data?, response: URLResponse?, error: Error?) throws -> Data {
         logger.setMethod("checkResponse(...))")
         if let error = error {
-            logger.error(error.localizedDescription)
-            return false
+            throw throwFaultyResponse("\(error.localizedDescription)")
         }
         guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
-            logger.error("Returned 200...299 status code")
-            return false
+            throw throwFaultyResponse("Returned 200...299 status code")
         }
         if let mimeType = response.mimeType, mimeType != "application/json" {
-            logger.error("mimeType is \(mimeType)")
-            return false
+            throw throwFaultyResponse("mimeType is \(mimeType)")
         }
-        guard data != nil else {
-            logger.error("Returned data is null")
-            return false
+        guard (data != nil) else {
+            throw throwFaultyResponse("Returned data is null")
         }
-        return true
+        return data!
     }
     
-    func decodeResponse(data: Data) {
+    func decodeResponse(data: Data) throws -> HttpResponse {
         logger.setMethod("decodeResponse(data))")
         logger.debug("\(String(data: data, encoding: .utf8)!)")
-        do {
-            let response = try Json.decoder.decode(HttpResponse.self, from: data)
-            logger.debug("httpResponse.returncode: \(response.returncode), httpResponse.message: \(response.message ?? "")")
-            guard response.returncode==0 else {
-                logger.error("return code is not 0 : \(response)")
-                return
-            }
-            
-            guard let data = response.data else {
-                logger.error("data object does not exists : \(response)")
-                return
-            }
-            
-            switch data.action {
-            case Labels.ACTION_GETUPDATEDPET:
-                let id = try response.getUpdatedPetId()
-                dispatchUpdatedPet(id)
-            case Labels.ACTION_GETFEEDERPETS:
-                let feederPets = try response.getFeederPets(hostname: self.hostname, port: self.port, feeder: self.feeder, password: self.password)
-                dispatchFeederPets(feederPets)
-            case Labels.ACTION_GETFEEDINGRECORDS, Labels.ACTION_ADDFEEDINGRECORD, Labels.ACTION_DELFEEDINGRECORD:
-                let pet = try response.getFeedingRecords(hostname: self.hostname, port: self.port, feeder: self.feeder, password: self.password)
-                dispatchPetFeedingRecords(pet)
-            default:
-                logger.error("Invalid action: \(data.action)")
-            }
-        } catch {
-            logger.error("\(error)")
-            dispatch()
+        let response = try Json.decoder.decode(HttpResponse.self, from: data)
+        logger.debug("httpResponse.returncode: \(response.returncode), httpResponse.message: \(String(describing: response.message))")
+        guard response.returncode==0 else {
+            throw throwFaultyResponse("return code is not 0 : \(response)")
         }
+        return response
     }
     
     func enableFeeding() {
@@ -292,19 +254,25 @@ class WhoFedBlaiseViewModel: ObservableObject {
             return
         }
     }
-        
-    func dispatch() {
-        logger.setMethod("dispatch()")
-        DispatchQueue.main.async {
-            self.logger.error("Failed to return data from remote server")
-            self.enableFeeding()
+
+    func feederPetsCompletionHandler(data: Data?, response: URLResponse?, error: Error?) -> Void {
+        logger.setMethod("feederPetsCompletionHandler(...)")
+        do {
+            let data: Data = try checkResponse(data: data, response: response, error: error)
+            let response = try decodeResponse(data: data)
+            let feederPets = try response.getFeederPets()
+            feederPetsDispatch(feederPets)
+        } catch HttpErrors.FaultyResponse(String: ) {
+            return
+        } catch {
+           logger.error("\(error)")
         }
     }
-    
-    func dispatchFeederPets(_ feederPets0: PetArray) {
+
+    func feederPetsDispatch(_ feederPets0: PetArray) {
         logger.setMethod("dispatchFeederPets(...)")
         DispatchQueue.main.async {
-            var feederPets1 = PetArray(Labels.FEEDERPETS,persistant: false)
+            let feederPets1 = PetArray(Labels.FEEDERPETS,persistant: false)
             if feederPets0.isEmpty {
                 self.logger.warn("FeederPets list is empty")
                 return
@@ -319,13 +287,9 @@ class WhoFedBlaiseViewModel: ObservableObject {
                     self.swapTo(pet.id)
                 }
             }
-            do {
-                self.logger.info("Re-initiliazed Pet list \(self.feederPets.name)")
-                self.logger.debug("Re-initiliazed Pet list \(self.feederPets.name) : \(try self.feederPets.string())")
-            } catch {
-                self.logger.error("Failed to stringify pet list \(self.feederPets.name); \(error)")
-            }
-
+           self.logger.info("Re-initiliazed Pet list \(self.feederPets.name)")
+            self.logger.debug("Re-initiliazed Pet list \(self.feederPets.name) : \(self.feederPets.string)")
+        
             if !feederPets1.isEmpty {
                 if self.selectedPets.isEmpty {
                     do {
@@ -338,35 +302,89 @@ class WhoFedBlaiseViewModel: ObservableObject {
                 }
             }
             self.feederPets = feederPets1
-
         }
     }
 
-    
+    func feedingRecordsCompletionHandler(data: Data?, response: URLResponse?, error: Error?) -> Void {
+        logger.setMethod("feedingRecordsCompletionHandler(...)")
+        do {
+            let data: Data = try checkResponse(data: data, response: response, error: error)
+            let response = try decodeResponse(data: data)
+            let pet = try response.getFirstPet()
+            dispatchPetFeedingRecords(pet)
+        } catch HttpErrors.FaultyResponse {
+            return
+        } catch {
+           logger.error("\(error)")
+        }
+    }
+
     func dispatchPetFeedingRecords(_ pet: Pet) {
-        logger.setMethod("dispatchFeedingRecords(...Pet...)")
+        logger.setMethod("dispatchFeedingRecords(\(Pet.shortId(id)))")
         DispatchQueue.main.async {
             self.feedingEnabled = true
             self.id = pet.id
             self.name = pet.name
-            self.account = pet.account
-            self.feeder = pet.feeder
-            self.alias = pet.alias
-            self.role = pet.role
-            self.account = pet.account
+            self.account = pet.account.alias
+            self.feeder = pet.feeder.email
+            self.alias = pet.feeder.alias
             self.type = pet.type
             self.race = pet.race
             self.name = pet.name
+            self.canFeed = pet.canFeed
+            self.recordNumber = Float(pet.recordNumber)
             self.feedingRecords = pet.feedingRecords
             self.logger.info("... of \(self.short)")
             self.logger.debug("... \(self.string)")
         }
     }
     
-    func dispatchUpdatedPet(_ id: UUID) {
-        logger.setMethod("dispatchUpdatedPet(\(Pet.shortId(id)))")
+    func lastUpdatedCompletionHandler(data: Data?, response: URLResponse?, error: Error?) -> Void {
+        logger.setMethod("lastUpdatedCompletionHandler(...)")
+        do {
+            let data: Data = try checkResponse(data: data, response: response, error: error)
+            let response = try decodeResponse(data: data)
+            let pet = try response.getFirstPet()
+            dispatchLastUpdated(pet: pet)
+        } catch HttpErrors.FaultyResponse {
+            return
+        } catch {
+           logger.error("\(error)")
+        }
+    }
+
+    func dispatchLastUpdated(pet : Pet) {
         DispatchQueue.main.async {
-            self.switchTo(id)
+            self.logger.setMethod("dispatchLastUpdated(\(pet.short))")
+            do {
+                let selectedPet = try self.selectedPets.get(pet)
+                self.logger.debug("\(pet.short) found in selected pet list")
+                let record = pet.feedingRecords.first ?? FeedingRecord(timestamp: Date.distantPast, portion: Double(Defaults.PORTION), feeder: pet.feeder)
+                self.logger.debug("First record is \(record.string))")
+                selectedPet.feedingRecords = [record]
+            } catch {
+                self.logger.error("Unselected pet\(pet.short)")
+                return
+            }
+            
+            var latestTimestamp: Date = .distantPast
+            var latestPet: UUID = UUID()
+            for pet in self.selectedPets.pets {
+                do {
+                    let timestamp: Date = try pet.lastUpdated()
+                    if latestTimestamp < timestamp {
+                        latestTimestamp = timestamp
+                        latestPet = pet.id
+                        self.logger.debug("Pet \(pet.short) was last set at \(latestTimestamp)")
+                    }
+                } catch {
+                    self.logger.debug("Pet \(pet.short) has no feeding records")
+                    return
+                }
+            }
+            
+            self.switchTo(latestPet)
+            self.selectedPetConfig = false
         }
     }
     
@@ -439,7 +457,7 @@ class WhoFedBlaiseViewModel: ObservableObject {
         } else {
             target=target-scale
         }
-        WhoFedBlaiseDefaults.save(self)
+        save()
     }
     
     func fontsizeHeader(increase: Bool) {
@@ -459,11 +477,92 @@ class WhoFedBlaiseViewModel: ObservableObject {
     
     var string: String {
         do {
-            return try Json.toString(encodable: try JsonPetParameters(self))
+            let encodable = JsonPetParameters(self)
+            let string = try Json.toString(encodable: encodable)
+            return string
         } catch {
             let message = String("\(error)")
             logger.error(message)
             return String(message)
         }
     }
+    
+    func save() {
+        logger.setMethod("save()")
+        if selectedPets.isEmpty {
+            logger.warn("Failed to save; No selected pet")
+            return
+        }
+        
+        let keyString = key.string
+        logger.info("Save current pet to UserDefaults[\(keyString)]")
+        do {
+            let json = JsonPetParameters(self)
+            let data = try Json.toData(encodable: json)
+            WhoFedBlaiseDefaults.save(data, forKey: keyString)
+        } catch {
+            logger.error("Failed to save current pet to UserDefaults[\(keyString)] : \(error)")
+            return
+        }
+    }
+    
+    public func restore() {
+        logger.setMethod("restore()")
+        let keyString = key.string
+        do {
+            logger.debug("... from UserDefaults\(keyString)")
+            let data = try WhoFedBlaiseDefaults.restoreAsData(keyString)
+            let parameters = try Json.decoder.decode(JsonPetParameters.self, from: data)
+            logger.info("Successfully parsed")
+            logger.debug("... to \(parameters)")
+            hostname = parameters.hostname
+            port = String(parameters.port)
+            feeder = parameters.feeder
+            alias = parameters.alias
+            password = parameters.password
+            id = parameters.id
+            name = parameters.name
+            race = parameters.race
+            type = parameters.type
+            canFeed = false
+            account = parameters.account
+            logLevel = parameters.logLevel
+            recordNumber = parameters.recordNumber
+            feedingNext = parameters.feedingNext
+            notifyEvery = parameters.notifyEvery
+            notifyBefore = parameters.notifyBefore
+            
+            wallpaperMagnifyBy = parameters.wallpaperMagnifyBy
+            wallpaperOffsetWidth = parameters.wallpaperOffsetWidth
+            wallpaperOffsetHeight = parameters.wallpaperOffsetHeight
+            wallpaperImage = WhoFedBlaiseDefaults.getWallpaperImage(keyString)
+            
+            fontsizePetName = parameters.fontsizePetName
+            fontsizePetAccount = parameters.fontsizePetAccount
+            fontsizeTimestamp = parameters.fontsizeTimestamp
+            fontsizeFeeder = parameters.fontsizeFeeder
+            fontsizeFooter = parameters.fontsizeFeeder
+            
+            foregroundColor = parameters.foregroundColor
+            backgroundColor = parameters.backgroundColor
+            opacity = parameters.opacity
+            
+            for jsonFeedingRecord in parameters.feedingRecords {
+                feedingRecords.append(FeedingRecord(timestamp: jsonFeedingRecord.timestamp, portion: jsonFeedingRecord.portion, feeder: jsonFeedingRecord.feeder, alias: jsonFeedingRecord.alias, name: jsonFeedingRecord.name))
+            }
+            
+            save()
+        } catch {
+            logger.warn("\(error)")
+        }
+    }
+    
+    public static func isSimulator() -> Bool {
+        var simulator: Bool = false
+        #if targetEnvironment(simulator)
+            simulator = true
+        #endif
+        return simulator
+    }
+
 }

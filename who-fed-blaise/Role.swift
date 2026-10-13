@@ -18,38 +18,29 @@ class Role {
         self.name = name
     }
     
-    static let ROLE_ROOT="root"
-    static let ROLE_ADMIN="admin"
-    static let ROLE_OWNER="owner"
-    static let ROLE_USER="user"
-    static let ROLE_CHILD="child"
-    static let ROLE_READ="READ"
+    /*ROLE_ROOT=0
+    ROLE_DEVELOPER=20
+    ROLE_ADMIN=50
+    ROLE_USER=100
+
+    ROLE_ACCOUNT_OWNER=0
+    ROLE_ACCOUNT_ADMIN=50
+    ROLE_ACCOUNT_USER=100
+
+    ROLE_PET_FULL=0
+    ROLE_PET_CHILD=50
+    ROLE_PET_READONLY=100*/
     
-    static let ROLE_LEVEL_READ: Int = 0
-    static let ROLE_LEVEL_CHILD: Int = 10
-    static let ROLE_LEVEL_USER: Int = 100
-    static let ROLE_LEVEL_OWNER: Int = 1000
-    static let ROLE_LEVEL_ADMIN: Int = 10000
-    static let ROLE_LEVEL_ROOT: Int =  100000
-    static let ROLE_LEVEL_DEFAULT: Int =  ROLE_LEVEL_READ
+    static let PET_FULL: Int = 0
+    static let PET_CHILD: Int = 50
+    static let PET_READONLY: Int = 100
     
-    static let ROLES: [Role] = [Role(ROLE_LEVEL_READ,ROLE_READ),Role(ROLE_LEVEL_CHILD,ROLE_CHILD),Role(ROLE_LEVEL_USER,ROLE_USER),Role(ROLE_LEVEL_OWNER,ROLE_OWNER),Role(ROLE_LEVEL_ADMIN,ROLE_ADMIN),Role(ROLE_LEVEL_ROOT,ROLE_ROOT)]
-        
-    static func getRoleLevel(_ name: String)->Int{
-        for role in ROLES {
-            if role.name == name {
-                return role.level
-            }
-        }
-        return -1
-    }
+    static let ACCOUNT_OWNER: Int = 0
+    static let ACCOUNT_ADMIN: Int = 50
+    static let ACCOUNT_USER: Int =  100
     
-    static func getRoleName(_ level: Int)->String{
-        for role in ROLES {
-            if role.level == level {
-                return role.name
-            }
-        }
-        return "unknown"
-    }
+    static let ROOT: Int = 0
+    static let DEVELOPPER: Int = 20
+    static let ADMIN: Int = 50
+    static let USER: Int = 100
 }

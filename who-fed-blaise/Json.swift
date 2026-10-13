@@ -9,6 +9,8 @@ import Foundation
 
 enum JsonErrors: Error {
     case failedToEncode(Encodable)
+    case failedToDecode(Decodable)
+    case failedToStringify(Encodable)
 }
 
 class Json {
@@ -30,27 +32,41 @@ class Json {
         return decoder
     }
     
-    public static func toData(_ encodable: Encodable) throws -> Data! {
-        logger.setMethod("toData(...any Encodable...)")
+    public static func toData(encodable: Encodable) throws -> Data {
+        logger.setMethod("toData(\(encodable.self))")
         do {
-            return try Json.encoder.encode(encodable)
+            let data = try Json.encoder.encode(encodable)
+            logger.debug("Successfully encoded \(encodable)")
+            return data
         } catch {
-            logger.error("\(error)")
-            throw error
+            logger.error("Failed to encode \(encodable) : \(error)")
+            throw JsonErrors.failedToEncode(encodable)
         }
     }
     
     public static func toString(encodable: Encodable) throws -> String {
-        logger.setMethod("toString(...any Encodable...)")
+        logger.setMethod("toString(\(encodable.self))")
         do {
-            guard let string = String(data: try Json.toData(encodable), encoding: .utf8) else {
+            let data = try Json.toData(encodable: encodable)
+            guard let string = String(data: data, encoding: .utf8) else {
                 logger.error("Failed to stringify")
-                throw JsonErrors.failedToEncode(encodable)
+                throw JsonErrors.failedToStringify(encodable)
             }
+            logger.debug("Successfully stringified \(encodable)")
             return string
         } catch {
-            logger.error("\(error)")
-            throw error
+            logger.error("Failed to stringify \(encodable) : \(error)")
+            throw JsonErrors.failedToStringify(encodable)
+        }
+    }
+    
+    public static func stringify(encodable: Encodable) -> String {
+        logger.setMethod("stringify(\(encodable.self))")
+        do {
+            return try Json.toString(encodable: encodable)
+        } catch {
+            logger.error("Failed to stringify \(encodable) : \(error)")
+            return "{'message':'Failed to stringify \(encodable) : \(error)'}"
         }
     }
 }

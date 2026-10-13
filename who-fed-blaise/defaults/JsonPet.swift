@@ -4,6 +4,7 @@
 //
 //  Created by gude on 08.12.25.
 //
+/*
 import Foundation
 
 struct JsonPet:Encodable, Decodable {
@@ -17,7 +18,7 @@ struct JsonPet:Encodable, Decodable {
     var alias: String
     var role: Int
     var hostname: String
-    var port: String
+    var port: Int
     //var selected: Bool = false
 
     init(from: Pet) {
@@ -52,3 +53,4 @@ struct JsonPet:Encodable, Decodable {
     }
     
 }
+*/

@@ -9,13 +9,16 @@ import Foundation
 
 class HttpRequestBody: Encodable, Decodable {
     var version: Int = 2
-    var isProduction: Bool = isSimulator()
+    var isSimulator: Bool = WhoFedBlaiseViewModel.isSimulator()
+    var hostname: String
+    var port: Int
     var action: String
-    var logLevel: Int?
-    var feeder: String?
-    var password: String?
-    var role: Int?
-    var account: String?
+    var logLevel: String
+    var feeder: String
+    //var alias: String?
+    var password: String
+    //var role: Int?
+    //var account: String?
     var pet: UUID?
     var recordNumber: Int?
     var deviceToken: String?
@@ -23,66 +26,72 @@ class HttpRequestBody: Encodable, Decodable {
     var portion: Float?
 
     // Base v2 request
-    init(action: String, logLevel: Int?=nil, feeder: String?=nil, password: String?=nil) {
+    init(action: String, logLevel: String, hostname: String, port: Int, feeder: String, password: String) {
         self.action=action
         self.logLevel=logLevel
+        self.hostname=hostname
+        self.port=port
         self.feeder=feeder
         self.password=password
     }
 
     // Request v2 feeder's pet list
-    static func HttpRequestFeederPets(_ wfb: WhoFedBlaiseViewModel) throws -> HttpRequestBody {
-        return HttpRequestBody(action: Labels.ACTION_GETFEEDERPETS, logLevel: wfb.logLevel, feeder: wfb.feeder, password: wfb.password)
-    }
-    
-    // Request v2 device latest updated pet id
-    static func HttpRequestUpdatedPet() throws -> HttpRequestBody {
-        let request = HttpRequestBody(action: Labels.ACTION_GETUPDATEDPET)
-        request.deviceToken=WhoFedBlaiseViewModel.deviceToken
-        return request
+    static func HttpRequestFeederPets(_ wfb: WhoFedBlaiseViewModel) -> HttpRequestBody {
+        return HttpRequestBody(action: Labels.ACTION_GETFEEDERPETS, logLevel: wfb.logLevel, hostname: wfb.hostname, port: wfb.intPort, feeder: wfb.feeder, password: wfb.password)
     }
     
     // Request pet's feeding records
-    convenience init(action: String, logLevel: Int, feeder: String, password: String, pet: UUID, recordNumber: Int) {
-        self.init(action: action, logLevel: logLevel, feeder: feeder, password: password)
-        self.pet = pet
-        self.recordNumber = recordNumber
+    convenience init(action: String, pet: Pet) {
+        let feeder = pet.feeder
+        let account = pet.account
+        self.init(action: action, logLevel: pet.logLevel, hostname: account.hostname, port: account.port, feeder: feeder.email, password: feeder.password)
+        self.pet = pet.id
         self.deviceToken = WhoFedBlaiseViewModel.deviceToken
     }
     
-    static func HttpRequestFeedingRecords(_ wfb: WhoFedBlaiseViewModel) throws -> HttpRequestBody {
-        return HttpRequestBody(action: Labels.ACTION_GETFEEDINGRECORDS, logLevel: wfb.logLevel, feeder: wfb.feeder, password: wfb.password,  pet: wfb.id, recordNumber: Int(wfb.recordNumber))
+    // Request pet's feeding records
+    convenience init(action: String, wfb: WhoFedBlaiseViewModel) {
+        self.init(action: action, logLevel: wfb.logLevel, hostname: wfb.hostname, port: Int(wfb.port) ?? 80, feeder: wfb.feeder, password: wfb.password)
+        self.pet = wfb.id
+        self.recordNumber = Int(wfb.recordNumber)
+        self.deviceToken = WhoFedBlaiseViewModel.deviceToken
     }
     
-    // Request to delete feeding record
-    convenience init(action: String, logLevel: Int,feeder: String, password: String, pet: UUID, recordNumber: Int, timestamp: Date) {
-        self.init(action: action, logLevel: logLevel, feeder: feeder, password: password, pet: pet, recordNumber: recordNumber)
-        self.timestamp = timestamp
+    static func HttpRequestFeedingRecords(_ wfb: WhoFedBlaiseViewModel) -> HttpRequestBody {
+        return HttpRequestBody(action: Labels.ACTION_GETFEEDINGRECORDS, wfb: wfb)
     }
     
-    static func HttpRequestDelFeedingRecord(_ wfb: WhoFedBlaiseViewModel, timestamp: Date) throws -> HttpRequestBody {
-        return HttpRequestBody(action: Labels.ACTION_DELFEEDINGRECORD, logLevel: wfb.logLevel, feeder: wfb.feeder, password: wfb.password, pet: wfb.id, recordNumber: Int(wfb.recordNumber), timestamp: timestamp)
+    static func HttpRequestLastUpdated(_ pet: Pet) -> HttpRequestBody {
+        let request = HttpRequestBody(action: Labels.ACTION_GETLASTUPDATED, pet: pet)
+        request.recordNumber = 1
+        return request
     }
     
-    // Request to add feeding record
-    convenience init(action: String, logLevel: Int,feeder: String, password: String, pet: UUID, recordNumber: Int, timestamp: Date, portion: Float) {
-        self.init(action: action, logLevel: logLevel, feeder: feeder, password: password, pet: pet, recordNumber: recordNumber, timestamp: timestamp)
-        self.portion = portion
+    static func HttpRequestDelFeedingRecord(_ wfb: WhoFedBlaiseViewModel, timestamp: Date) -> HttpRequestBody {
+        let request = HttpRequestBody(action: Labels.ACTION_DELFEEDINGRECORD, wfb: wfb)
+        request.timestamp = timestamp
+        return request
     }
     
-    static func HttpRequestAddFeedingRecord(_ wfb: WhoFedBlaiseViewModel, timestamp: Date, portion: Float) throws -> HttpRequestBody {
-        return HttpRequestBody(action: Labels.ACTION_ADDFEEDINGRECORD, logLevel: wfb.logLevel, feeder: wfb.feeder, password: wfb.password, pet: wfb.id, recordNumber: Int(wfb.recordNumber), timestamp: timestamp, portion: portion)
+    static func HttpRequestAddFeedingRecord(_ wfb: WhoFedBlaiseViewModel, timestamp: Date, portion: Float) -> HttpRequestBody {
+        let request = HttpRequestBody(action: Labels.ACTION_ADDFEEDINGRECORD, wfb: wfb)
+        request.portion = portion
+        request.timestamp = timestamp
+        return request
     }
     
     enum CodingKeys : String, CodingKey {
         case version
-        case isProduction = "isproduction"
+        case isSimulator = "issimulator"
         case action
         case logLevel = "loglevel"
+        case hostname
+        case port
         case feeder
+        //case alias
         case password
-        case role
-        case account = "account"
+        //case role
+        //case account = "account"
         case pet
         case recordNumber = "recordnumber"
         case deviceToken = "devicetoken"

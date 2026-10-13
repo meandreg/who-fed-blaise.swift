@@ -20,7 +20,7 @@ struct PetNameView: View {
                     selection: $whoFedBlaiseViewModel.id,
                         content: {
                     ForEach(whoFedBlaiseViewModel.selectedPets.pets) {pet in
-                            Text(pet.name+"\n(@) "+pet.account)
+                        Text(pet.name+"\n(@) "+pet.account.alias)
                         }
                     })
                     .pickerStyle(.menu)

@@ -15,13 +15,13 @@ struct WallPaperPHPickerView: View {
     
     let logger = Logger(category: "WallPaperPHPickerView")
     
-    @ObservedObject var whoFedBlaiseViewModel: WhoFedBlaiseViewModel
+    @ObservedObject var wfb: WhoFedBlaiseViewModel
     @State private var showPicker:Bool = false
     @State private var pickedImage:UIImage? = nil
     @State private var imagePicked: Bool = false
     
     var body: some View {
-        WallPaperView(whoFedBlaiseViewModel: whoFedBlaiseViewModel, showPicker: $showPicker)
+        WallPaperView(wfb: wfb, showPicker: $showPicker)
         .sheet(isPresented: $showPicker, content: {
             WallPaperViewControllerRepresentable(showPicker: $showPicker, imagePicked: $imagePicked, pickedImage: $pickedImage)
         })
@@ -34,8 +34,9 @@ struct WallPaperPHPickerView: View {
                         return
                 }
                 logger.debug("New wallpaper image selected: \(imagePicked)")
-            WhoFedBlaiseDefaults.saveWallpaperUIImage(whoFedBlaiseViewModel, uiImage: newImage)
-            //feedingViewModel.setWallpaperUIImage(uiImage: newImage)
+            WhoFedBlaiseDefaults.saveWallpaperUIImage(wfb, uiImage: newImage)
+            wfb.wallpaperImage = WhoFedBlaiseDefaults.getWallpaperImage(wfb)
+            logger.debug("Successfully changed wallpaperImage")
         }
     }
 }

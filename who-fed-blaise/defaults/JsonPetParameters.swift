@@ -10,13 +10,13 @@ import SwiftUI
 struct JsonPetParameters: Encodable, Decodable {
 
     var id: UUID
-    var logLevel: Int
+    var logLevel: String
     var hostname: String
-    var port: String
+    var port: Int
     var account: String
     var feeder: String
+    var alias: String
     var password: String
-    var role: Int
     var name: String
     var type: String
     var race: String
@@ -41,17 +41,17 @@ struct JsonPetParameters: Encodable, Decodable {
     
     var feedingRecords: [JsonFeedingRecord] = []
     
-    init(_ from: WhoFedBlaiseViewModel) throws {
+    init(_ from: WhoFedBlaiseViewModel) {
         self.id = from.id
         self.name = from.name
         self.type = from.type
         self.race = from.race
         self.feeder = from.feeder
+        self.alias = from.alias
         self.password = from.password
         self.account = from.account
         self.hostname = from.hostname
-        self.port = from.port
-        self.role = from.role
+        self.port = from.intPort
         self.recordNumber = from.recordNumber
         self.logLevel = from.logLevel
         self.feedingNext = from.feedingNext
@@ -88,8 +88,8 @@ struct JsonPetParameters: Encodable, Decodable {
         case type
         case race
         case feeder
+        case alias
         case password
-        case role
         case recordNumber = "recordnumber"
         case logLevel = "loglevel"
         case feedingNext = "feedingnext"

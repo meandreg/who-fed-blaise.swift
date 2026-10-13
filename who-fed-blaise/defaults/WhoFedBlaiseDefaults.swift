@@ -15,18 +15,6 @@ class WhoFedBlaiseDefaults {
     static let logger = Logger(category: "WhoFedBlaiseDefauts")
     static let userDefaults: UserDefaults = .standard
     
-    /*private static func toData(_ encodable: Encodable) throws -> Data! {
-        encoder.outputFormatting = .prettyPrinted
-        return try encoder.encode(encodable)
-    }
-
-    public static func toString(_ encodable: Encodable) throws -> String {
-        guard let string = String(data: try toData(encodable), encoding: .utf8) else {
-            throw WhoFedBlaiseErrors.failedToEncode("Failed to convert petParametersList data to String")
-        }
-        return string
-    }
-     */
     private static func restoreAsString(_ forKey: String) throws -> String {
         logger.setMethod("restoreAsString(\(forKey))")
         guard let string = userDefaults.string(forKey: forKey) else {
@@ -37,7 +25,7 @@ class WhoFedBlaiseDefaults {
         return string
     }
         
-    private static func restoreAsData(_ forKey: String) throws -> Data  {
+    public static func restoreAsData(_ forKey: String) throws -> Data  {
         logger.setMethod("restoreAsData(\(forKey))")
         do {
             let string = try restoreAsString(forKey)
@@ -50,76 +38,8 @@ class WhoFedBlaiseDefaults {
         }
     }
     
-    public static func restore(_ target: WhoFedBlaiseViewModel) {
-        logger.setMethod("restore(\(target.short))")
-        let keyString = target.key.string
-        do {
-            logger.debug("... from UserDefaults\(keyString)")
-            let data = try restoreAsData(keyString)
-            let parameters = try Json.decoder.decode(JsonPetParameters.self, from: data)
-            logger.info("Successfully parsed")
-            logger.debug("... to \(parameters)")
-            target.hostname = parameters.hostname
-            target.port = parameters.port
-            target.feeder = parameters.feeder
-            target.id = parameters.id
-            target.name = parameters.name
-            target.race = parameters.race
-            target.type = parameters.type
-            target.role = parameters.role
-            target.account = parameters.account
-            target.logLevel = parameters.logLevel
-            target.recordNumber = parameters.recordNumber
-            target.feedingNext = parameters.feedingNext
-            target.notifyEvery = parameters.notifyEvery
-            target.notifyBefore = parameters.notifyBefore
-            
-            target.wallpaperMagnifyBy = parameters.wallpaperMagnifyBy
-            target.wallpaperOffsetWidth = parameters.wallpaperOffsetWidth
-            target.wallpaperOffsetHeight = parameters.wallpaperOffsetHeight
-            target.wallpaperImage = WhoFedBlaiseDefaults.getWallpaperImage(keyString)
-            
-            target.fontsizePetName = parameters.fontsizePetName
-            target.fontsizePetAccount = parameters.fontsizePetAccount
-            target.fontsizeTimestamp = parameters.fontsizeTimestamp
-            target.fontsizeFeeder = parameters.fontsizeFeeder
-            target.fontsizeFooter = parameters.fontsizeFeeder
-            
-            target.foregroundColor = parameters.foregroundColor
-            target.backgroundColor = parameters.backgroundColor
-            target.opacity = parameters.opacity
-            
-            for jsonFeedingRecord in parameters.feedingRecords {
-                target.feedingRecords.append(WhoFedBlaiseDefaults.feedingRecord(from: jsonFeedingRecord))
-            }
-            
-            WhoFedBlaiseDefaults.save(target)
-        } catch {
-            logger.warn("\(error)")
-        }
-    }
-    
     private static func feedingRecord(from: JsonFeedingRecord) -> FeedingRecord {
         return FeedingRecord(timestamp: from.timestamp, portion: from.portion, feeder: from.feeder, alias: from.alias, name: from.name)
-    }
-
-    public static func save(_ wfb: WhoFedBlaiseViewModel) -> Void {
-        logger.setMethod("save(\(wfb.short))")
-        if wfb.selectedPets.isEmpty {
-            logger.warn("Failed to save; No selected pet")
-            return
-        }
-        let keyString = wfb.key.string
-        logger.info("Save current pet to UserDefaults[\(keyString)]")
-        do {
-            let json = try JsonPetParameters(wfb)
-            if let data = try Json.toData(json) {
-                save(data, forKey: keyString)
-            }
-        } catch {
-            logger.error("Failed to save current pet to UserDefaults[\(keyString)] : \(error)")
-            return
-        }
     }
 
     public static func remove(_ key: Key) {
@@ -132,7 +52,7 @@ class WhoFedBlaiseDefaults {
         userDefaults.removeObject(forKey: forKey)
     }
     
-    private static func save(_ data: Data, forKey: String) {
+    public static func save(_ data: Data, forKey: String) {
         logger.setMethod("save(data,\(forKey))")
         logger.debug("data: \(data)")
         guard let string = String(data: data, encoding: .utf8) else {
@@ -209,17 +129,17 @@ class WhoFedBlaiseDefaults {
         return getWallpaperImage(key.string)
     }
     
-    private static func getWallpaperImage(_ key: String) -> Image {
+    public static func getWallpaperImage(_ key: String) -> Image {
         logger.setMethod("getWallpaperImage(\(key))")
         do {
             let uiImage = try getWallpaperUIImage(key)
             logger.info("Succesfully restored wallpaper image")
             return Image(uiImage: uiImage)
         } catch WhoFedBlaiseErrors.imageDoesNotExist(key){
-            logger.logger.info("Wallpaper image file does not exists")
+            logger.info("Wallpaper image file does not exists")
             return Image(Defaults.WALLPAPERNAME)
         } catch {
-            logger.logger.error("Failed to load Wallpaper image file")
+            logger.error("Failed to load Wallpaper image file")
             return Image(Defaults.WALLPAPERNAME)
         }
     }
